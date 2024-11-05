@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
+    "dev": "npm run build:rs && next dev --turbopack",
+    "build": "npm run build:rs && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:rs": "wasm-pack build rust_bindings --target web"
   },
   "dependencies": {
     "react": "19.0.0-rc-02c0e824-20241028",
