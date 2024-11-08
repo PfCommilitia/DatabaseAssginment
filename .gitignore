@@ -44,3 +44,7 @@ package.lock
 
 Desktop.ini
 Thumbs.db
+
+/rust_bindings/target/
+/rust_bindings/Cargo.lock
+/rust_bindings/pkg/
