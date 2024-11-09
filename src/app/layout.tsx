@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import "./globals.css";
+import SessionProviderWrapper from "@/app/frontend/sessionProviderWrapper";
 
 export const metadata: Metadata = {
   title: "数据库系统概论作业",
@@ -18,7 +19,9 @@ export default function RootLayout({
         <AppRouterCacheProvider
           options = { { key: "css" } }
         >
-          { children }
+          <SessionProviderWrapper>
+            { children }
+          </SessionProviderWrapper>
         </AppRouterCacheProvider>
       </body>
     </html>

@@ -1,4 +1,4 @@
-@import url("https://asset.commilitia.net/Font/CSS/fonts.css");
+@import url("https://asset.commilitia.net/Font/CSS/SarasaUISC.css");
 
 @tailwind base;
 @tailwind components;
@@ -16,13 +16,7 @@
   }
 }
 
-progress, meter, datalist, samp, kbd, pre, pre *, code, code * {
-  font-family: "MonoLisa Commilitia", "Sarasa UI SC", sans-serif;
-}
-
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: "Sarasa UI SC", sans-serif;
-  -webkit-font-smoothing: antialiased;
 }
