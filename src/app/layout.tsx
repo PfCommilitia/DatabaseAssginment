@@ -1,29 +1,29 @@
 import type { Metadata } from "next";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import "./globals.css";
-import SessionProviderWrapper from "@/app/frontend/sessionProviderWrapper";
+import SessionProviderWrapper from "@/app/dependencies/providers/sessionProviderWrapper";
+import ReduxProviderWrapper from "@/app/dependencies/providers/reduxProviderWrapper";
 
 export const metadata: Metadata = {
-  title: "数据库系统概论作业",
-  description: "没有介绍。",
+  title: "社团活动管理系统",
+  description: "没有介绍。"
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }:
+                                   Readonly<{ children: React.ReactNode; }>) {
   return (
-    <html lang="zh-CN">
-      <body>
-        <AppRouterCacheProvider
-          options = { { key: "css" } }
-        >
-          <SessionProviderWrapper>
-            { children }
-          </SessionProviderWrapper>
-        </AppRouterCacheProvider>
-      </body>
+    <html lang = "zh-CN">
+    <body>
+    <AppRouterCacheProvider
+      options = { { key: "css" } }
+    >
+      <SessionProviderWrapper>
+        <ReduxProviderWrapper>
+          { children }
+        </ReduxProviderWrapper>
+      </SessionProviderWrapper>
+    </AppRouterCacheProvider>
+    </body>
     </html>
   );
 }

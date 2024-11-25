@@ -1,87 +1,168 @@
+"use client";
+
 import {
   Box,
   Button,
-  Typography
+  Typography,
+  Tooltip
 } from "@mui/material";
-import { getServerSession } from "next-auth";
+import { getSession } from "next-auth/react";
+import LoginDialog from "@/app/dependencies/clientComponents/loginDialog";
+import { useEffect, useState } from "react";
+import { signOut } from "next-auth/react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/app/dependencies/redux/store";
+import { setSession } from "@/app/dependencies/redux/stateSlices/session";
 
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function LoginButton() {
+  const [ dialogOpen, setDialogOpen ] = useState(false);
+
   return (
-    <Button
-      variant = "contained"
-      color = "info"
-      sx = { {
-        marginLeft: "auto"
-      } }
-    >
-      <Typography
-        sx = { {
-          color: "primary.contrastText"
-        } }
+    <>
+      <Tooltip
+        title = "用户登录"
       >
-        󰍂 用户登录
-      </Typography>
-    </Button>
+        <Button
+          variant = "contained"
+          color = "info"
+          sx = { {
+            marginLeft: "auto"
+          } }
+          onClick = { () => setDialogOpen(true) }
+        >
+          <Typography
+            sx = { {
+              color: "primary.contrastText"
+            } }
+          >
+            󰍂 用户登录
+          </Typography>
+        </Button>
+      </Tooltip>
+      <LoginDialog
+        open = { dialogOpen }
+        handleCloseAction = { () => {
+          setDialogOpen(false);
+        } }
+      />
+    </>
   );
 }
 
 function ConsoleButton() {
+  const dispatch = useDispatch();
+
+  async function handleLogout() {
+    await signOut({ redirect: false });
+    const currentSession = await getSession();
+    if (!currentSession) {
+      dispatch(setSession(null));
+    } else {
+      alert("登出失败，请重试。");
+    }
+  }
+
   return (
     <Box
       sx = { {
         display: "flex",
-        marginLeft: "auto",
+        marginLeft: "auto"
       } }
     >
-      <Button
-        variant = "text"
-        color = "info"
+      <Tooltip
+        title = "登出"
       >
-        <Typography
-          variant = "h4"
-          sx = { {
-            color: "primary.contrastText"
-          } }
+        <Button
+          variant = "text"
+          color = "info"
         >
-          󰀉
-        </Typography>
-      </Button>
-      <Button
-        variant = "contained"
-        color = "info"
+          <Typography
+            variant = "h4"
+            sx = { {
+              color: "primary.contrastText",
+              lineHeight: "1.5em",
+              paddingY: "0.1em"
+            } }
+            onClick = { handleLogout }
+          >
+            󰍃
+          </Typography>
+        </Button>
+      </Tooltip>
+      <Tooltip
+        title = "用户"
       >
-        <Typography
-          sx = { {
-            color: "primary.contrastText"
-          } }
+        <Button
+          variant = "text"
+          color = "info"
         >
-          󰆍 控制台
-        </Typography>
-      </Button>
+          <Typography
+            variant = "h4"
+            sx = { {
+              color: "primary.contrastText",
+              lineHeight: "1.5em",
+              paddingY: "0.1em"
+            } }
+          >
+            󰀉
+          </Typography>
+        </Button>
+      </Tooltip>
+      <Tooltip
+        title = "控制台"
+      >
+        <Button
+          variant = "contained"
+          color = "info"
+          href = "/console"
+        >
+          <Typography
+            sx = { {
+              color: "primary.contrastText",
+              lineHeight: "1.5em",
+              paddingY: "0.1em"
+            } }
+          >
+            󰆍 控制台
+          </Typography>
+        </Button>
+      </Tooltip>
     </Box>
   );
 }
 
 
-function TopLeftButton({ session }: {
-  session: Awaited<ReturnType<typeof getServerSession>>
-}) {
+function TopLeftButton() {
+  const session = useSelector((state: RootState) => state.session.session);
+
   return (
     <Box
       sx = { {
         display: "flex",
         minWidth: "100%",
         minHeight: "6vh",
-        maxHeight: "6vh",
+        maxHeight: "6vh"
       } }
     >
-      { session ? <ConsoleButton/> : <LoginButton/> }
+      { session ? <ConsoleButton/> :
+        <LoginButton/> }
     </Box>
   );
 }
 
-export default async function Home() {
-  const session = await getServerSession();
+export default function Home() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    async function fetchSession() {
+      const currentSession = await getSession();
+      dispatch(setSession(currentSession));
+    }
+
+    fetchSession();
+  }, [ dispatch ]);
 
   return (
     <Box
@@ -89,7 +170,7 @@ export default async function Home() {
         alignItems: "center",
         justifyItems: "center",
         minWidth: "100%",
-        minHeight: "100vh",
+        minHeight: "100vh"
       } }
     >
       <Box
@@ -101,10 +182,10 @@ export default async function Home() {
           bgcolor: "primary.dark",
           minWidth: "100%",
           minHeight: "10vh",
-          maxHeight: "10vh",
+          maxHeight: "10vh"
         } }
       >
-        <TopLeftButton session = { session }/>
+        <TopLeftButton/>
       </Box>
       <Box
         sx = { {
@@ -113,7 +194,7 @@ export default async function Home() {
           justifyItems: "center",
           bgcolor: "primary.main",
           minWidth: "100%",
-          minHeight: "80vh",
+          minHeight: "80vh"
         } }
       >
         <Box
@@ -129,44 +210,11 @@ export default async function Home() {
             variant = "h1"
             sx = { {
               color: "primary.contrastText",
-              paddingY: "0.1em"
-            } }
-          >
-            你好，
-            <Box
-              component = "code"
-            >
-              Next.js
-            </Box>
-            ！
-          </Typography>
-          <Typography
-            variant = "h5"
-            sx = { {
-              color: "primary.contrastText",
               paddingY: "0.1em",
-              textAlign: "center"
+              lineHeight: "1.5em"
             } }
           >
-            <Box
-              component = "code"
-            >
-              Next.js
-            </Box>
-            是一个支持服务端渲染和静态网站生成的
-            <Box
-              component = "code"
-            >
-              React
-            </Box>
-            组件。<br/>
-            此页面由
-            <Box
-              component = "code"
-            >
-              Next.js
-            </Box>
-            生成。
+            社团活动信息管理系统
           </Typography>
         </Box>
       </Box>
@@ -179,17 +227,18 @@ export default async function Home() {
           bgcolor: "primary.dark",
           minWidth: "100%",
           minHeight: "10vh",
-          maxHeight: "10vh",
+          maxHeight: "10vh"
         } }
       >
         <Typography
           sx = { {
             color: "primary.contrastText",
             paddingY: "0.1em",
-            textAlign: "center"
+            textAlign: "center",
+            lineHeight: "1.5em"
           } }
         >
-           2024
+          2022202696程敬轩，2022202677朱天哲，2022202590姚梁浩，2022202701邓托宇  2024
         </Typography>
       </Box>
     </Box>
