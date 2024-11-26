@@ -3,12 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm run build:rs && next dev --turbopack",
-    "build": "npm run build:rs && next build",
+    "dev": "next dev --turbopack",
+    "build": "next build",
     "start": "next start",
     "build:start": "npm run build && npm run start",
-    "lint": "next lint",
-    "build:rs": "wasm-pack build rust_bindings --target web"
+    "lint": "next lint"
   },
   "dependencies": {
     "@emotion/cache": "^11.13.1",
