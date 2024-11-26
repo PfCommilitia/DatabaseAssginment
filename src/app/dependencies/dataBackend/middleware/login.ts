@@ -5,12 +5,11 @@ export default async function login(username: string, password: string):
   const client = await connect();
   try {
     const result = await client.query(
-      "SELECT Id, Name FROM Individuals WHERE Username = $1 AND PasswordHash =" +
-      " CRYPT($2, PasswordHash);",
+      `SELECT Name FROM "Society".Individual WHERE Username = $1 AND PasswordHash = CRYPT($2, PasswordHash) AND IsActive;`,
       [ username, password ]
     );
     if (result.rowCount) {
-      return { id: result.rows[0].id, name: result.rows[0].name };
+      return { id: username, name: result.rows[0].name };
     }
     return null;
   } catch (e) {

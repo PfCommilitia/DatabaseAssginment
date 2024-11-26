@@ -97,6 +97,7 @@ function ConsoleButton() {
         <Button
           variant = "text"
           color = "info"
+          href = "/userinfo"
         >
           <Typography
             variant = "h4"
