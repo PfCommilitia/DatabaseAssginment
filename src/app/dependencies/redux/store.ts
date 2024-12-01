@@ -3,7 +3,7 @@ import sessionReducer from "@/app/dependencies/redux/stateSlices/session";
 
 const store = configureStore({
   reducer: {
-    session: sessionReducer
+    session: sessionReducer,
   }
 });
 

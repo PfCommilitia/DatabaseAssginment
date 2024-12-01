@@ -2,168 +2,13 @@
 
 import {
   Box,
-  Button,
-  Typography,
-  Tooltip
+  Typography
 } from "@mui/material";
-import { getSession } from "next-auth/react";
-import LoginDialog from "@/app/dependencies/clientComponents/loginDialog";
-import { useEffect, useState } from "react";
-import { signOut } from "next-auth/react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/app/dependencies/redux/store";
-import { setSession } from "@/app/dependencies/redux/stateSlices/session";
-
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function LoginButton() {
-  const [ dialogOpen, setDialogOpen ] = useState(false);
-
-  return (
-    <>
-      <Tooltip
-        title = "用户登录"
-      >
-        <Button
-          variant = "contained"
-          color = "info"
-          sx = { {
-            marginLeft: "auto"
-          } }
-          onClick = { () => setDialogOpen(true) }
-        >
-          <Typography
-            sx = { {
-              color: "primary.contrastText"
-            } }
-          >
-            󰍂 用户登录
-          </Typography>
-        </Button>
-      </Tooltip>
-      <LoginDialog
-        open = { dialogOpen }
-        handleCloseAction = { () => {
-          setDialogOpen(false);
-        } }
-      />
-    </>
-  );
-}
-
-function ConsoleButton() {
-  const dispatch = useDispatch();
-
-  async function handleLogout() {
-    await signOut({ redirect: false });
-    const currentSession = await getSession();
-    if (!currentSession) {
-      dispatch(setSession(null));
-    } else {
-      alert("登出失败，请重试。");
-    }
-  }
-
-  return (
-    <Box
-      sx = { {
-        display: "flex",
-        marginLeft: "auto"
-      } }
-    >
-      <Tooltip
-        title = "登出"
-      >
-        <Button
-          variant = "text"
-          color = "info"
-        >
-          <Typography
-            variant = "h4"
-            sx = { {
-              color: "primary.contrastText",
-              lineHeight: "1.5em",
-              paddingY: "0.1em"
-            } }
-            onClick = { handleLogout }
-          >
-            󰍃
-          </Typography>
-        </Button>
-      </Tooltip>
-      <Tooltip
-        title = "用户"
-      >
-        <Button
-          variant = "text"
-          color = "info"
-          href = "/userinfo"
-        >
-          <Typography
-            variant = "h4"
-            sx = { {
-              color: "primary.contrastText",
-              lineHeight: "1.5em",
-              paddingY: "0.1em"
-            } }
-          >
-            󰀉
-          </Typography>
-        </Button>
-      </Tooltip>
-      <Tooltip
-        title = "控制台"
-      >
-        <Button
-          variant = "contained"
-          color = "info"
-          href = "/console"
-        >
-          <Typography
-            sx = { {
-              color: "primary.contrastText",
-              lineHeight: "1.5em",
-              paddingY: "0.1em"
-            } }
-          >
-            󰆍 控制台
-          </Typography>
-        </Button>
-      </Tooltip>
-    </Box>
-  );
-}
-
-
-function TopLeftButton() {
-  const session = useSelector((state: RootState) => state.session.session);
-
-  return (
-    <Box
-      sx = { {
-        display: "flex",
-        minWidth: "100%",
-        minHeight: "6vh",
-        maxHeight: "6vh"
-      } }
-    >
-      { session ? <ConsoleButton/> :
-        <LoginButton/> }
-    </Box>
-  );
-}
+import TopBar from "@/app/dependencies/sharedComponents/topBar";
+import { useInitSession } from "@/app/dependencies/lib/initSession";
 
 export default function Home() {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    async function fetchSession() {
-      const currentSession = await getSession();
-      dispatch(setSession(currentSession));
-    }
-
-    fetchSession();
-  }, [ dispatch ]);
+  useInitSession();
 
   return (
     <Box
@@ -174,20 +19,7 @@ export default function Home() {
         minHeight: "100vh"
       } }
     >
-      <Box
-        component = "header"
-        sx = { {
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          bgcolor: "primary.dark",
-          minWidth: "100%",
-          minHeight: "10vh",
-          maxHeight: "10vh"
-        } }
-      >
-        <TopLeftButton/>
-      </Box>
+      <TopBar></TopBar>
       <Box
         sx = { {
           display: "grid",

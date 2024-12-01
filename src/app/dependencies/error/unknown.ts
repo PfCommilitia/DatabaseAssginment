@@ -1,0 +1,1 @@
+export const ERROR_UNKNOWN = new Error("An unknown error occurred; it cannot be handled by the application");
