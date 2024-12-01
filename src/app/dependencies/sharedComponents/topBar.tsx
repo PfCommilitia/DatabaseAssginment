@@ -135,15 +135,26 @@ export default function TopBar(): JSX.Element {
             alignItems: "center",
             justifyContent: "space-between",
             bgcolor: "primary.dark",
-            minWidth: "100%",
+            width: "100%",
             minHeight: "10vh",
             maxHeight: "10vh"
           } }
   >
+    <Typography
+            variant = "h4"
+            sx = { {
+              marginLeft: "1em",
+              color: "primary.contrastText",
+              whiteSpace: "nowrap",
+              maxWidth: "50vw"
+            } }
+    >
+      社团活动信息管理系统
+    </Typography>
     <Box
             sx = { {
               display: "flex",
-              minWidth: "100%",
+              minWidth: "50vw",
               minHeight: "6vh",
               maxHeight: "6vh"
             } }

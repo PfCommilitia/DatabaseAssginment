@@ -6,6 +6,7 @@ import {
 } from "@mui/material";
 import TopBar from "@/app/dependencies/sharedComponents/topBar";
 import { useInitSession } from "@/app/dependencies/lib/initSession";
+import FootBar from "@/app/dependencies/sharedComponents/footBar";
 
 export default function Home() {
   useInitSession();
@@ -15,7 +16,7 @@ export default function Home() {
       sx = { {
         alignItems: "center",
         justifyItems: "center",
-        minWidth: "100%",
+        width: "100%",
         minHeight: "100vh"
       } }
     >
@@ -26,8 +27,9 @@ export default function Home() {
           alignItems: "center",
           justifyItems: "center",
           bgcolor: "primary.main",
-          minWidth: "100%",
-          minHeight: "80vh"
+          width: "100%",
+          minHeight: "80vh",
+          maxHeight: "80vh"
         } }
       >
         <Box
@@ -51,29 +53,7 @@ export default function Home() {
           </Typography>
         </Box>
       </Box>
-      <Box
-        component = "footer"
-        sx = { {
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          bgcolor: "primary.dark",
-          minWidth: "100%",
-          minHeight: "10vh",
-          maxHeight: "10vh"
-        } }
-      >
-        <Typography
-          sx = { {
-            color: "primary.contrastText",
-            paddingY: "0.1em",
-            textAlign: "center",
-            lineHeight: "1.5em"
-          } }
-        >
-          2022202696程敬轩，2022202677朱天哲，2022202590姚梁浩，2022202701邓托宇  2024
-        </Typography>
-      </Box>
+      <FootBar></FootBar>
     </Box>
   );
 }

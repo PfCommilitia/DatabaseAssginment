@@ -3,10 +3,12 @@ import { Session } from "next-auth";
 
 interface SessionState {
   session: Session | null;
+  fetching: boolean;
 }
 
 const initialState: SessionState = {
-  session: null
+  session: null,
+  fetching: false
 };
 
 const sessionSlice = createSlice({
@@ -15,9 +17,12 @@ const sessionSlice = createSlice({
   reducers: {
     setSession: (state, action: PayloadAction<Session | null>) => {
       state.session = action.payload;
+    },
+    setFetching: (state, action: PayloadAction<boolean>) => {
+      state.fetching = action.payload;
     }
   }
 });
 
-export const { setSession } = sessionSlice.actions;
+export const { setSession, setFetching } = sessionSlice.actions;
 export default sessionSlice.reducer;

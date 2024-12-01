@@ -18,14 +18,17 @@ export default async function listJoinedSociety() {
   const client = await connect();
   try {
     const result = await client.query(
-      `SELECT s.Uuid, s.Name FROM "Society".Membership m JOIN "Society".Society s `+
-      `ON m.Society = s.Uuid WHERE m.Individual = $1`,
+      `SELECT s.Uuid, s.Name
+       FROM "Society".Membership m
+              JOIN "Society".Society s
+                   ON m.Society = s.Uuid
+       WHERE m.Individual = $1`,
       [ session.user.name ]
     );
-    return result.rows.map(row => ({
-      uuid: row.uuid,
-      name: row.name
-    }));
+    if (!result.rowCount) {
+      return null;
+    }
+    return result.rows.map(row => [ row.uuid, row.name ]);
   } catch (e) {
     if (!(e instanceof Error)) {
       throw ERROR_UNKNOWN;

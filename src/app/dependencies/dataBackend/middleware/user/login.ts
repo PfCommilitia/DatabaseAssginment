@@ -1,4 +1,6 @@
 import { connect } from "@/app/dependencies/dataBackend/dataSource";
+import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
+import processDBError from "@/app/dependencies/error/database";
 
 export default async function login(username: string, password: string):
   Promise<{ id: string, name: string } | null> {
@@ -13,6 +15,10 @@ export default async function login(username: string, password: string):
     }
     return null;
   } catch (e) {
+    if (!(e instanceof Error)) {
+      throw ERROR_UNKNOWN;
+    }
+    e = processDBError(e);
     throw e;
   } finally {
     client.release();
