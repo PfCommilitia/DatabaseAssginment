@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     if (!result) {
       return NextResponse.json({ error: ERROR_INCORRECT_USERNAME_OR_PASSWORD.code }, { status: 404 });
     }
-    return NextResponse.json({ username: username }, { status: 200 });
+    return NextResponse.json({ payload: {} }, { status: 200 });
   } catch (e) {
     if (!(e instanceof ServerError)) {
       return NextResponse.json({ error: ERROR_UNKNOWN.code }, { status: 500 });

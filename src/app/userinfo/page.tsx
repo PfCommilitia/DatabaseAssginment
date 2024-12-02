@@ -40,7 +40,7 @@ function ChangePasswordDialog({ open, handleCloseAction }: {
       return;
     }
     try {
-      const validateLogin = await fetch("/api/changePassword", {
+      const validateLogin = await fetch("/api/user/changePassword", {
         method: "POST",
         body: JSON.stringify({
           username: "admin",
@@ -131,7 +131,7 @@ function UserInfoBox(): JSX.Element {
 
   useEffect(() => {
     async function fetchSetUserInfo() {
-      const res = await fetch("/api/fetchUserInfo", {
+      const res = await fetch("/api/user/fetchInfo", {
         method: "POST"
       });
       if (!res.ok) {
@@ -143,7 +143,7 @@ function UserInfoBox(): JSX.Element {
         }
       }
       const info = await res.json();
-      setUserInfo(info);
+      setUserInfo(info.payload);
     }
 
     fetchSetUserInfo();

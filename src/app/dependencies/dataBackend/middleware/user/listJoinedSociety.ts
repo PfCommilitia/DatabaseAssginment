@@ -22,11 +22,11 @@ export default async function listJoinedSociety() {
        FROM "Society".Membership m
               JOIN "Society".Society s
                    ON m.Society = s.Uuid
-       WHERE m.Individual = $1`,
+       WHERE m.Individual = $1 AND m.IsActive;`,
       [ session.user.name ]
     );
     if (!result.rowCount) {
-      return null;
+      return [];
     }
     return result.rows.map(row => [ row.uuid, row.name ]);
   } catch (e) {

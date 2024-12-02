@@ -10,7 +10,7 @@ export async function POST() {
     if (!response) {
       return NextResponse.json({ error: ERROR_NO_USER_IN_SESSION.code }, { status: 404 });
     }
-    return NextResponse.json(response, { status: 200 });
+    return NextResponse.json({ payload: response }, { status: 200 });
   } catch (e) {
     if (!(e instanceof ServerError)) {
       return NextResponse.json({ error: ERROR_UNKNOWN.code }, { status: 500 });
