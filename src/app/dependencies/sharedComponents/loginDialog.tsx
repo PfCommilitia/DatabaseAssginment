@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { setSession } from "@/app/dependencies/redux/stateSlices/session";
 import { useRouter } from "next/navigation";
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
+import { ERROR_INVALID_PASSWORD } from "@/app/dependencies/error/databaseTrigger";
 
 export default function LoginDialog({ open, handleCloseAction }: {
   open: boolean,
@@ -37,7 +38,7 @@ export default function LoginDialog({ open, handleCloseAction }: {
         dispatch(setSession(session));
         handleCloseAction();
       } else {
-        router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
+        router.push(`/error?error=${ encodeURIComponent(ERROR_INVALID_PASSWORD.code) }`);
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
