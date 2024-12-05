@@ -6,9 +6,8 @@ import {
   ERROR_NO_USER_IN_SESSION,
   ERROR_SESSION_NOT_FOUND
 } from "@/app/dependencies/error/session";
-import { ERROR_USER_NOT_PERMITTED } from "@/app/dependencies/error/databaseTrigger";
 
-export default async function changePassword(username: string, password: string, newPassword: string):
+export default async function changePassword(password: string, newPassword: string):
   Promise<number | null> {
   const session = await getServerSession();
   if (!session) {
@@ -16,9 +15,6 @@ export default async function changePassword(username: string, password: string,
   }
   if (!session.user) {
     throw ERROR_NO_USER_IN_SESSION;
-  }
-  if (session.user.name !== username) {
-    throw ERROR_USER_NOT_PERMITTED;
   }
   const client = await connect();
   try {
@@ -28,7 +24,7 @@ export default async function changePassword(username: string, password: string,
        WHERE Username = $1
          AND PasswordHash = CRYPT($2, PasswordHash)
          AND IsActive;`,
-      [ username, password, newPassword ]
+      [ session.user.name, password, newPassword ]
     );
     if (!result.rowCount) {
       return null;

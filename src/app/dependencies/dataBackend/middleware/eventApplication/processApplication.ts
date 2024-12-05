@@ -7,7 +7,12 @@ import {
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import processDBError from "@/app/dependencies/error/database";
 
-export default async function cancelEventApplication(uuid: string): Promise<number | null> {
+export default async function processEventApplication(
+  uuid: string,
+  result: boolean,
+  comment: string,
+  timestamp: string
+): Promise<number | null> {
   const session = await getServerSession();
   if (!session) {
     throw ERROR_SESSION_NOT_FOUND;
@@ -17,16 +22,16 @@ export default async function cancelEventApplication(uuid: string): Promise<numb
   }
   const client = await connect();
   try {
-    const result = await client.query(
-      `UPDATE "Society".EventApplication
-       SET IsActive = FALSE
-       WHERE Uuid = $1 AND Applicant = $2`,
-      [ uuid, session.user.name ]
+    const time = new Date(timestamp);
+    const result0 = await client.query(
+      `INSERT INTO "Society".EventApplicationApproval (Application, Approver, Result, Comment, Timestamp)
+       VALUES ($1, $2, $3, $4, $5)`,
+      [ uuid, session.user.name, result, comment, time ]
     );
-    if (!result.rowCount) {
+    if (!result0.rowCount) {
       return null;
     }
-    return result.rowCount;
+    return result0.rowCount;
   } catch (e) {
     if (!(e instanceof Error)) {
       throw ERROR_UNKNOWN;

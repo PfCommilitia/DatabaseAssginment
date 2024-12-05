@@ -24,6 +24,8 @@ const trigger_errors: Record<string, ServerError> = {
 
 export const ERROR_DB_COMMUNICATION = new ServerError("Error communicating with the database", 4);
 
+export const ERROR_PARSING_DATE = new ServerError("Error parsing date", 22);
+
 const EXCEPTION_PREFIX_LENGTH = "TRIGGER EXCEPTION ".length;
 
 export default function processDBError(error: Error): ServerError {
