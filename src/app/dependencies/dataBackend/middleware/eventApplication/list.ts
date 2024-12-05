@@ -16,7 +16,8 @@ type EventApplication = [
   [ string, string ], // timeRange
   string, // title
   string, // description
-  number // capacity
+  number, // capacity
+  string, // status
 ];
 
 export default async function listEventApplication(
@@ -185,6 +186,7 @@ export default async function listEventApplication(
         result.push(row.title);
         result.push(row.description);
         result.push(row.capacity);
+        result.push(row.result === null ? "pending" : (row.result ? "approved" : "rejected"));
         return result as EventApplication;
       }
     );
