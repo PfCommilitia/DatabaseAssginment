@@ -11,8 +11,7 @@ import {
 export default async function placeEventApplication(
   society: string,
   venue: string,
-  startTimestamp: string,
-  endTimestamp: string,
+  timeRange: [ string, string ],
   title: string,
   description: string,
   capacity: number | null
@@ -27,13 +26,11 @@ export default async function placeEventApplication(
   const client = await connect();
   try {
     const uuid = uuidv7();
-    const startTime = new Date(startTimestamp);
-    const endTime = new Date(endTimestamp);
     const result = await client.query(
       `INSERT INTO "Society".EventApplication
        (Uuid, Applicant, Society, Venue, TimeRange, Title, Description, Capacity)
        VALUES ($1, $2, $3, $4, tstzrange($5, $6), $7, $8, $9)`,
-      [ uuid, session.user.name, society, venue, startTime, endTime, title, description, capacity ]
+      [ uuid, session.user.name, society, venue, new Date(timeRange[0]), new Date(timeRange[1]), title, description, capacity ]
     );
     if (!result.rowCount) {
       return null;

@@ -13,7 +13,7 @@ type EventApplication = [
   string, // applicant
   string, // society
   string, // venue
-  [ string, string ], // timerange
+  [ string, string ], // timeRange
   string, // title
   string, // description
   number // capacity
@@ -23,7 +23,7 @@ export default async function listEventApplication(
   filterStatus: ("approved" | "rejected" | "pending")[] | null,
   filterSocieties: string[] | null,
   filterOrganisations: string[] | null,
-  filterOrganisationHeirarchy: string[] | null,
+  filterOrganisationHierarchy: string[] | null,
   filterVenues: string[] | null,
   filterTimeRange: [ string, string ] | null,
   filterSelf: boolean | null,
@@ -44,7 +44,7 @@ export default async function listEventApplication(
   } else {
     conditions.push(
       `EXISTS (
-        WITH RECURSIVE OrganisationHeirarchy AS (
+        WITH RECURSIVE OrganisationHierarchy AS (
           SELECT o1.Uuid, o1.Parent
             FROM "Society".Organisation o1
             WHERE o1.Uuid = (
@@ -55,11 +55,11 @@ export default async function listEventApplication(
           UNION ALL
           SELECT o2.Uuid, o2.Parent
             FROM "Society".Organisation o2
-            JOIN OrganisationHeirarchy oh
+            JOIN OrganisationHierarchy oh
             ON oh.Parent = o2.Uuid
         )
         SELECT 1
-        FROM OrganisationHeirarchy oh
+        FROM OrganisationHierarchy oh
         WHERE oh.Representative = $${ params.length + 1 }
       )`
     );
@@ -79,10 +79,10 @@ export default async function listEventApplication(
     );
     params.push(filterOrganisations);
   }
-  if (filterOrganisationHeirarchy?.length) {
+  if (filterOrganisationHierarchy?.length) {
     conditions.push(
       `EXISTS (
-         WITH RECURSIVE OrganisationHeirarchy AS (
+         WITH RECURSIVE OrganisationHierarchy AS (
            SELECT o1.Uuid, o1.Parent
            FROM "Society".Organisation o1
            WHERE o1.Uuid = (
@@ -93,15 +93,15 @@ export default async function listEventApplication(
          UNION ALL
          SELECT o2.Uuid, o2.Parent
          FROM "Society".Organisation o2
-          JOIN OrganisationHeirarchy oh
+          JOIN OrganisationHierarchy oh
             ON oh.Parent = o2.Uuid
         )
         SELECT 1
-        FROM OrganisationHeirarchy oh
+        FROM OrganisationHierarchy oh
         WHERE oh.Uuid = ANY($${ params.length + 1 })
       )`
     );
-    params.push(filterOrganisationHeirarchy);
+    params.push(filterOrganisationHierarchy);
   }
   if (filterSocieties?.length) {
     conditions.push(`ea.Society = ANY($${ params.length + 1 })`);

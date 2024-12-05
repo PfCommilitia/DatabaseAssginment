@@ -1,16 +1,15 @@
 import { NextResponse } from "next/server";
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import ServerError from "@/app/dependencies/error/errorType";
-import { ERROR_INCORRECT_USERNAME_OR_PASSWORD } from "@/app/dependencies/error/session";
-import changePassword
-  from "@/app/dependencies/dataBackend/middleware/user/changePassword";
+import placeEventApplication
+  from "@/app/dependencies/dataBackend/middleware/eventApplication/place";
 
 export async function POST(request: Request) {
   try {
-    const { password, passwordNew } = await request.json();
-    const result = await changePassword(password, passwordNew);
+    const { uuid, venue, timeRange, title, description, capacity } = await request.json();
+    const result = await placeEventApplication(uuid, venue, timeRange, title, description, capacity);
     if (!result) {
-      return NextResponse.json({ error: ERROR_INCORRECT_USERNAME_OR_PASSWORD.code }, { status: 404 });
+      return NextResponse.json({ error: ERROR_UNKNOWN.code }, { status: 404 });
     }
     return NextResponse.json({ payload: {} }, { status: 200 });
   } catch (e) {

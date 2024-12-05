@@ -7,7 +7,7 @@ import {
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import processDBError from "@/app/dependencies/error/database";
 
-export default async function processEventApplication(
+export default async function ApproveEventApplication(
   uuid: string,
   result: boolean,
   comment: string,
