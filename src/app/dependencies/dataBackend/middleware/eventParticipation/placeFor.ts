@@ -25,21 +25,22 @@ export default async function placeEventParticipationApplicationFor(
   try {
     // Checking permission
     const validation = await client.query(
-      `SELECT 1
-       FROM (WITH RECURSIVE OrganisationHierarchy AS (SELECT Uuid, Parent, Representative
-                                                      FROM "Society".Organisation
-                                                      WHERE Uuid = (SELECT Organisation
-                                                                    FROM "Society".Individual
-                                                                    WHERE Username = $1)
-                                                      UNION ALL
-                                                      SELECT O.Uuid, O.Parent, O.Representative
-                                                      FROM "Society".Organisation O
-                                                             JOIN OrganisationHierarchy oh
-                                                                  ON O.Uuid = oh.Parent)
-             SELECT 1
-             FROM OrganisationHierarchy
-             WHERE Representative = $2) AS OrganisationHierarchy`,
-      [ applicant, session.user.name ]
+      `
+        WITH RECURSIVE OrganisationHierarchy AS (SELECT Uuid, Parent, Representative
+                                                 FROM "Society".Organisation
+                                                 WHERE Uuid = (SELECT Organisation
+                                                               FROM "Society".Individual
+                                                               WHERE Username = $1)
+                                                 UNION ALL
+                                                 SELECT O.Uuid, O.Parent, O.Representative
+                                                 FROM "Society".Organisation O
+                                                        JOIN OrganisationHierarchy oh
+                                                             ON O.Uuid = oh.Parent)
+        SELECT 1
+        FROM OrganisationHierarchy
+        WHERE Representative = $2
+        LIMIT 1
+      `
     );
     if (!validation.rowCount && applicant !== session.user.name) {
       throw ERROR_USER_NOT_PERMITTED;
