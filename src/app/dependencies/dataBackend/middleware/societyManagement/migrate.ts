@@ -49,7 +49,7 @@ export default async function migrateSociety(societyId: string, newOrganizationI
 
     // 3. 检查结果，如果找不到合适的记录，说明用户没有权限迁移社团
     if (result.rowCount === 0) {
-      return null;
+        throw ERROR_USER_NOT_PERMITTED;
     }
 
     // 4. 执行社团迁移操作
