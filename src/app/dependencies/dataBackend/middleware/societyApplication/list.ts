@@ -53,7 +53,7 @@ export default async function listSocietyApplication(
                 FROM "Society".Society s1
                 WHERE s1.Uuid = sa.Society
               )
-            UNION ALL
+            UNION
             SELECT o1.Uuid, o1.Parent, o1.Representative
               FROM "Society".Organisation o1
               JOIN OrganisationHierarchy oh
@@ -78,7 +78,7 @@ export default async function listSocietyApplication(
           SELECT o2.Uuid, o2.Parent
             FROM "Society".Organisation o2
             WHERE o2.Uuid = (SELECT i0.Organisation FROM "Society".Individual i0 WHERE i0.Username = sa.Applicant)
-          UNION ALL
+          UNION
           SELECT o3.Uuid, o3.Parent
             FROM "Society".Organisation o3
             JOIN OrganisationHierarchy oh
@@ -116,7 +116,7 @@ export default async function listSocietyApplication(
                   FROM "Society".Society s3
                   WHERE s3.Uuid = sa.Society
               )
-            UNION ALL
+            UNION
             SELECT o5.Uuid, o5.Parent
               FROM "Society".Organisation o5
               JOIN OrganisationHierarchy oh
@@ -130,7 +130,7 @@ export default async function listSocietyApplication(
     params.push(filterOrganisationHierarchy);
   }
   if (filterApplicationTimeRange) {
-    conditions.push(`sa.Timestap && TSTZRANGE($${ params.length + 1 }, $${ params.length + 2 })`);
+    conditions.push(`sa.Timestamp && TSTZRANGE($${ params.length + 1 }, $${ params.length + 2 })`);
     params.push(new Date(filterApplicationTimeRange[0]));
     params.push(new Date(filterApplicationTimeRange[1]));
   }

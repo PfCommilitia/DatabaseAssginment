@@ -61,7 +61,7 @@ export default async function listEventParticipationApplications(
             SELECT o0.Uuid, o0.Parent, o0.Representative
             FROM "Society".Organisation o0
             WHERE o0.Uuid = (SELECT s1.Organisation FROM "Society".Society s1 WHERE s1.Uuid = ea.Society)
-            UNION ALL
+            UNION
             SELECT o1.Uuid, o1.Parent, o1.Representative
             FROM "Society".Organisation o1
             JOIN OrganisationHierarchy oh
@@ -98,7 +98,7 @@ export default async function listEventParticipationApplications(
             FROM "Society".Individual i0
             WHERE i0.Username = epa.Applicant
           )
-          UNION ALL
+          UNION
           SELECT o3.Uuid, o3.Parent
           FROM "Society".Organisation o3
           JOIN OrganisationHierarchy oh
@@ -136,7 +136,7 @@ export default async function listEventParticipationApplications(
             FROM "Society".Society s3
             WHERE s3.Uuid = ea.Society
           )
-          UNION ALL
+          UNION
           SELECT o5.Uuid, o5.Parent
           FROM "Society".Organisation o5
           JOIN OrganisationHierarchy oh

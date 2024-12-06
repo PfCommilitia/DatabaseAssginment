@@ -36,7 +36,7 @@ export default async function listVenues(
           SELECT o1.Uuid, o1.Parent
             FROM "Society".Organisation o1
             WHERE o1.Uuid = v.Organisation
-          UNION ALL
+          UNION
           SELECT o2.Uuid, o2.Parent
             FROM "Society".Organisation o2
             JOIN OrganisationHierarchy oh

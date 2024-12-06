@@ -54,7 +54,7 @@ export default async function listEventApplication(
               FROM "Society".Venue v2
               WHERE v2.Uuid = ea.Society
             )
-          UNION ALL
+          UNION
           SELECT o2.Uuid, o2.Parent
             FROM "Society".Organisation o2
             JOIN OrganisationHierarchy oh
@@ -92,7 +92,7 @@ export default async function listEventApplication(
              FROM "Society".Society s2
              WHERE s2.Uuid = ea.Society
           )
-         UNION ALL
+         UNION
          SELECT o2.Uuid, o2.Parent
          FROM "Society".Organisation o2
           JOIN OrganisationHierarchy oh

@@ -31,7 +31,7 @@ export default async function placeEventParticipationApplicationFor(
                                                  WHERE Uuid = (SELECT Organisation
                                                                FROM "Society".Individual
                                                                WHERE Username = $1)
-                                                 UNION ALL
+                                                 UNION
                                                  SELECT O.Uuid, O.Parent, O.Representative
                                                  FROM "Society".Organisation O
                                                         JOIN OrganisationHierarchy oh
