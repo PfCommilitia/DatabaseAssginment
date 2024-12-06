@@ -16,6 +16,7 @@ type EventApplication = [
   [ string, string ], // timeRange
   string, // title
   string, // description
+  boolean, // isActive
   number, // capacity
   string, // status
 ];
@@ -112,7 +113,7 @@ export default async function listEventApplication(
     conditions.push(`ea.Venue = ANY($${ params.length + 1 })`);
     params.push(filterVenues);
   }
-  if (filterTimeRange?.length) {
+  if (filterTimeRange) {
     conditions.push(`ea.TimeRange && tstzrange($${ params.length + 1 }, $${ params.length + 2 })`);
     params.push(new Date(filterTimeRange[0]));
     params.push(new Date(filterTimeRange[1]));
@@ -153,6 +154,7 @@ export default async function listEventApplication(
                       TimeRange,
                       Title,
                       ea.Description,
+                      ea.IsActive,
                       ea.Capacity,
                       Result
                FROM "Society".EventApplication ea
@@ -185,6 +187,7 @@ export default async function listEventApplication(
         result.push([ new Date(timeRange.lower).toString(), new Date(timeRange.upper).toString() ]);
         result.push(row.title);
         result.push(row.description);
+        result.push(row.isactive);
         result.push(row.capacity);
         result.push(row.result === null ? "pending" : (row.result ? "approved" : "rejected"));
         return result as EventApplication;

@@ -18,6 +18,7 @@ type EventParticipationApplication = [
   string, // applicationTime
   string, // title
   string, // description
+  boolean, // isActive
   string, // status
   string, // participationStatus
 ];
@@ -161,7 +162,7 @@ export default async function listEventParticipationApplications(
     params.push(filterTimeRange[0]);
     params.push(filterTimeRange[1]);
   }
-  if (filterApplicationTimeRange?.length) {
+  if (filterApplicationTimeRange) {
     conditions.push(`epa.Timestamp && TSTZRANGE($${ params.length + 1 }, $${ params.length + 2 })`);
     params.push(filterApplicationTimeRange[0]);
     params.push(filterApplicationTimeRange[1]);
@@ -252,6 +253,7 @@ export default async function listEventParticipationApplications(
            epa.Timestamp AS ApplicationTime,
            ea.Title,
            ea.Description,
+           epa.IsActive,
            eaa.Result    AS Status,
            epaa.Result   AS ParticipationStatus
     FROM "Society".EventParticipationApplication epa
@@ -286,6 +288,7 @@ export default async function listEventParticipationApplications(
         result.push(new Date(row.applicationtime).toString());
         result.push(row.title);
         result.push(row.description);
+        result.push(row.isactive);
         result.push(row.status === null ? "pending" : (row.status ? "approved" : "rejected"));
         result.push(row.participationstatus === null ? "pending" : (row.participationstatus ? "approved" : "rejected"));
         return result;

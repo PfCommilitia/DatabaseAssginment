@@ -32,7 +32,7 @@ export default async function listOrganisations(
           SELECT o2.Uuid, o2.Parent
             FROM "Society".Organisation o2
             JOIN OrganisationHierarchy oh
-            ON oh.Uuid = o2.Parent
+            ON oh.Parent = o2.Uuid
         )
         SELECT 1
         FROM OrganisationHierarchy oh
@@ -51,7 +51,7 @@ export default async function listOrganisations(
         WITH RECURSIVE OrganisationHierarchy AS (
           SELECT o1.Uuid, o1.Parent
             FROM "Society".Organisation o1
-            WHERE o1.Uuid = ANY($${ params.length + 1 })
+            WHERE o1.Uuid = o.Uuid
           UNION ALL
           SELECT o2.Uuid, o2.Parent
             FROM "Society".Organisation o2
@@ -60,6 +60,7 @@ export default async function listOrganisations(
         )
         SELECT 1
         FROM OrganisationHierarchy oh
+        WHERE oh.Uuid = ANY($${ params.length + 1 })
       )`
     );
     params.push(filterAncestors);
