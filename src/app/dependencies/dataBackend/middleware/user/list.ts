@@ -7,7 +7,7 @@ import {
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import processDBError from "@/app/dependencies/error/database";
 
-type User = [
+export type User = [
   string, // username
   string, // name
   boolean, // isActive
@@ -31,7 +31,7 @@ export default async function listUser(
   const conditions = [];
   const params: (string | string[] | boolean)[] = [];
   conditions.push(`
-    EXISTS (
+    (i.Username = $${ params.length + 1 } OR EXISTS (
       WITH RECURSIVE OrganisationHierarchy AS (
         SELECT o0.Uuid, o0.Parent, o0.Representative
           FROM "Society".Organisation o0
@@ -44,7 +44,7 @@ export default async function listUser(
       )
       SELECT 1
       FROM OrganisationHierarchy oh
-      WHERE Representative = $${ params.length + 1 }
+      WHERE Representative = $${ params.length + 1 })
   `);
   params.push(session.user.name);
   if (filterOrganisation) {

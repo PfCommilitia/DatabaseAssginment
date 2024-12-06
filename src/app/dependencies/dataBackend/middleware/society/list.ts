@@ -60,6 +60,7 @@ export default async function listSocieties(
   }
   if (filterManaged !== null) {
     conditions.push(`
+      (s.Representative = $${ params.length + 1 } OR
       EXISTS (
         WITH RECURSIVE OrganisationHierarchy AS (
           SELECT o1.Uuid, o1.Parent, o1.Representative
@@ -73,7 +74,7 @@ export default async function listSocieties(
         )
         SELECT 1
         FROM OrganisationHierarchy oh
-        WHERE oh.Representative = $${ params.length + 1 }
+        WHERE oh.Representative = $${ params.length + 1 })
     `);
     const session = await getServerSession();
     if (!session) {

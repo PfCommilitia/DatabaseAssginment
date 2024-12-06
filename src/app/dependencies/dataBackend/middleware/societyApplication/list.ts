@@ -7,7 +7,7 @@ import {
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import processDBError from "@/app/dependencies/error/database";
 
-type SocietyApplication = [
+export type SocietyApplication = [
   string, // uuid
   string, // applicant
   string, // society

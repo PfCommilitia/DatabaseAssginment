@@ -8,7 +8,7 @@ import { parse as parseRange } from "postgres-range";
 import processDBError, { ERROR_PARSING_DATE } from "@/app/dependencies/error/database";
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 
-type EventParticipationApplication = [
+export type EventParticipationApplication = [
   string, // uuid
   string, // applicant
   string, // society

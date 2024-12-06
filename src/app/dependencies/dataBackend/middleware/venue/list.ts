@@ -7,7 +7,7 @@ import {
   ERROR_SESSION_NOT_FOUND
 } from "@/app/dependencies/error/session";
 
-type Venue = [
+export type Venue = [
   string, // uuid
   string, // name
   string, // address

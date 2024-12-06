@@ -8,7 +8,7 @@ import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import processDBError, { ERROR_PARSING_DATE } from "@/app/dependencies/error/database";
 import { parse as parseRange } from "postgres-range";
 
-type EventApplication = [
+export type EventApplication = [
   string, // uuid
   string, // applicant
   string, // society
@@ -46,9 +46,11 @@ export default async function listEventApplication(
     params.push(session.user.name);
   } else {
     conditions.push(
-      `EXISTS (
+      `(ea.Applicant = $${ params.length + 1 } OR
+       EXISTS (SELECT 1 FROM "Society".Society ss WHERE ss.Uuid = ea.Society AND ss.Representative = $${ params.length + 1 }) OR
+       EXISTS (
         WITH RECURSIVE OrganisationHierarchy AS (
-          SELECT o1.Uuid, o1.Parent
+          SELECT o1.Uuid, o1.Parent, o1.Representative
             FROM "Society".Organisation o1
             WHERE o1.Uuid = (
               SELECT v2.Organisation
@@ -56,7 +58,7 @@ export default async function listEventApplication(
               WHERE v2.Uuid = ea.Society
             )
           UNION
-          SELECT o2.Uuid, o2.Parent
+          SELECT o2.Uuid, o2.Parent, o2.Representative
             FROM "Society".Organisation o2
             JOIN OrganisationHierarchy oh
             ON oh.Parent = o2.Uuid
@@ -64,7 +66,7 @@ export default async function listEventApplication(
         SELECT 1
         FROM OrganisationHierarchy oh
         WHERE oh.Representative = $${ params.length + 1 }
-      )`
+      ))`
     );
     params.push(session.user.name);
   }

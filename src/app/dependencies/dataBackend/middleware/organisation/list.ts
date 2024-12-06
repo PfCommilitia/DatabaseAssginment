@@ -7,7 +7,7 @@ import {
   ERROR_SESSION_NOT_FOUND
 } from "@/app/dependencies/error/session";
 
-type Organisation = [
+export type Organisation = [
   string, // uuid
   string, // name
   string, // Representative.Name

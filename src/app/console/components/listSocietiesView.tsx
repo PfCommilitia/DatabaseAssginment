@@ -23,8 +23,10 @@ export function ListSocietiesHorizontalControl(
 function SocietyViewRow([ uuid, name, organisation, isActive, representative, description ]:
                         Society): JSX.Element {
   return (<TableRow
+          key = { uuid }
           sx = { {
-            height: "6%"
+            height: "6%",
+            verticalAlign: "top"
           } }
   >
     <TableCell
@@ -214,7 +216,9 @@ export function ListSocietiesView(
               </TableHead>
               <TableBody
                       sx = { {
-                        height: "90%"
+                        height: "90%",
+                        alignItems: "flex-start",
+                        justifyItems: "flex-start"
                       } }
               >
                 {
