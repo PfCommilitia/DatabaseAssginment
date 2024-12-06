@@ -9,8 +9,7 @@ export default function FootBar(): JSX.Element {
             justifyContent: "center",
             bgcolor: "primary.dark",
             width: "100%",
-            minHeight: "10vh",
-            maxHeight: "10vh"
+            height: "10%"
           } }
   >
     <Typography

@@ -14,8 +14,8 @@ export function NotLoggedIn(): JSX.Element {
                   sx = { {
                     alignItems: "center",
                     justifyItems: "center",
-                    minWidth: "100%",
-                    minHeight: "100vh"
+                    width: "100%",
+                    height: "100vh"
                   } }
           >
             <TopBar></TopBar>
@@ -25,8 +25,8 @@ export function NotLoggedIn(): JSX.Element {
                       alignItems: "center",
                       justifyItems: "center",
                       bgcolor: "primary.main",
-                      minWidth: "100%",
-                      minHeight: "80vh"
+                      width: "100%",
+                      height: "80%"
                     } }
             >
               <Box

@@ -187,7 +187,7 @@ export default async function listSocietyApplication(
                                         ON saa.Application = sa.Uuid
                         LEFT OUTER JOIN "Society".Individual i ON i.Username = sa.Applicant
                         LEFT OUTER JOIN "Society".Society s ON s.Uuid = sa.Society
-                 WHERE ${ conditions.join(" AND ") }`;
+                 WHERE ${ conditions.length ? conditions.map(str => str.trim()).join(" AND "): "TRUE" }`;
   const client = await connect();
   try {
     const result = await client.query(query, params);

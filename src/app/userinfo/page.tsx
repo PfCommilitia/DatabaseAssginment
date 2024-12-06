@@ -150,7 +150,15 @@ function UserInfoBox(): JSX.Element {
   }, [ router ]);
 
   return (
-          <>
+          <Box
+                  sx = { {
+                    display: "flex",
+                    alignItems: "center",
+                    flexDirection: "column",
+                    width: "100%",
+                    height: "80%"
+                  } }
+          >
             <ChangePasswordDialog
                     open = { showChangePassword }
                     handleCloseAction = { () => setShowChangePassword(false) }
@@ -160,8 +168,7 @@ function UserInfoBox(): JSX.Element {
                       display: "flex",
                       alignItems: "center",
                       width: "100%",
-                      minHeight: "62.5vh",
-                      maxHeight: "67.5vh"
+                      height: "100%"
                     } }
             >
               <Box
@@ -169,8 +176,7 @@ function UserInfoBox(): JSX.Element {
                         display: "flex",
                         flexDirection: "column",
                         flexGrow: 1,
-                        minHeight: "62.5vh",
-                        maxHeight: "67.5vh"
+                        height: "100%"
                       } }
               >
                 <Typography
@@ -179,8 +185,7 @@ function UserInfoBox(): JSX.Element {
                           lineHeight: "1.5em",
                           marginLeft: "1em",
                           fontWeight: "bold",
-                          minHeight: "7.5vh",
-                          maxHeight: "7.5vh"
+                          height: "15%"
                         } }
                 >
                   学工号
@@ -191,8 +196,7 @@ function UserInfoBox(): JSX.Element {
                           lineHeight: "1.5em",
                           marginLeft: "1em",
                           fontWeight: "bold",
-                          minHeight: "7.5vh",
-                          maxHeight: "7.5vh"
+                          height: "15%"
                         } }
                 >
                   姓名
@@ -203,8 +207,7 @@ function UserInfoBox(): JSX.Element {
                           lineHeight: "1.5em",
                           marginLeft: "1em",
                           fontWeight: "bold",
-                          minHeight: "7.5vh",
-                          maxHeight: "7.5vh"
+                          height: "15%"
                         } }
                 >
                   组织名称
@@ -215,8 +218,7 @@ function UserInfoBox(): JSX.Element {
                           lineHeight: "1.5em",
                           marginLeft: "1em",
                           fontWeight: "bold",
-                          minHeight: "7.5vh",
-                          maxHeight: "7.5vh"
+                          height: "15%"
                         } }
                 >
                   密码
@@ -227,8 +229,7 @@ function UserInfoBox(): JSX.Element {
                         display: "flex",
                         flexDirection: "column",
                         flexGrow: 8,
-                        minHeight: "62.5vh",
-                        maxHeight: "67.5vh"
+                        height: "100%"
                       } }
               >
                 <Typography
@@ -236,8 +237,7 @@ function UserInfoBox(): JSX.Element {
                           paddingY: "0.1em",
                           lineHeight: "1.5em",
                           marginLeft: "1em",
-                          minHeight: "7.5vh",
-                          maxHeight: "7.5vh"
+                          height: "15%"
                         } }
                 >
                   { userInfo ? userInfo.username : "" }
@@ -247,8 +247,7 @@ function UserInfoBox(): JSX.Element {
                           paddingY: "0.1em",
                           lineHeight: "1.5em",
                           marginLeft: "1em",
-                          minHeight: "7.5vh",
-                          maxHeight: "7.5vh"
+                          height: "15%"
                         } }
                 >
                   { userInfo ? userInfo.name : "" }
@@ -258,8 +257,7 @@ function UserInfoBox(): JSX.Element {
                           paddingY: "0.1em",
                           lineHeight: "1.5em",
                           marginLeft: "1em",
-                          minHeight: "7.5vh",
-                          maxHeight: "7.5vh"
+                          height: "15%"
                         } }
                 >
                   { userInfo ? userInfo.organisationName : "" }
@@ -269,8 +267,7 @@ function UserInfoBox(): JSX.Element {
                           paddingY: "0.1em",
                           lineHeight: "1.5em",
                           marginLeft: "1em",
-                          minHeight: "7.5vh",
-                          maxHeight: "7.5vh"
+                          height: "15%"
                         } }
                 >
                   { userInfo ? (userInfo.initialized ? "已设置" : "未设置") : "" }
@@ -282,38 +279,32 @@ function UserInfoBox(): JSX.Element {
                         alignItems: "center",
                         flexDirection: "column",
                         flexGrow: 1,
-                        minHeight: "62.5vh",
-                        maxHeight: "67.5vh"
+                        height: "100%"
                       } }
               >
                 <Box
                         className = "placeholder"
                         sx = { {
-                          minHeight: "7.5vh",
-                          maxHeight: "7.5vh"
+                          height: "15%"
                         } }
                 ></Box>
                 <Box
                         className = "placeholder"
                         sx = { {
-                          minHeight: "7.5vh",
-                          maxHeight: "7.5vh"
+                          height: "15%"
                         } }
                 ></Box>
                 <Box
                         className = "placeholder"
                         sx = { {
-                          minHeight: "7.5vh",
-                          maxHeight: "7.5vh"
+                          height: "15%"
                         } }
                 ></Box>
                 <Box
                         sx = { {
                           display: "flex",
                           alignItems: "center",
-                          justifyContent: "center",
-                          minHeight: "7.5vh",
-                          maxHeight: "7.5vh"
+                          height: "15%"
                         } }
                 >
                   <Tooltip
@@ -323,8 +314,8 @@ function UserInfoBox(): JSX.Element {
                             variant = { userInfo?.initialized ? "contained" : "outlined" }
                             color = "info"
                             sx = { {
-                              minHeight: "4vh",
-                              maxHeight: "4vh"
+                              minHeight: "33%",
+                              maxHeight: "33%"
                             } }
                             onClick = { () => setShowChangePassword(true) }
                     >
@@ -342,7 +333,7 @@ function UserInfoBox(): JSX.Element {
                 </Box>
               </Box>
             </Box>
-          </>
+          </Box>
   );
 }
 
@@ -352,9 +343,8 @@ function UserInfoPage(): JSX.Element {
                   sx = { {
                     alignItems: "center",
                     justifyItems: "center",
-                    width: "100%",
-                    minHeight: "100vh",
-                    maxHeight: "100vh"
+                    width: "100vw",
+                    height: "100vh"
                   } }
           >
             <TopBar></TopBar>
@@ -362,10 +352,9 @@ function UserInfoPage(): JSX.Element {
                     sx = { {
                       display: "grid",
                       alignItems: "center",
-                      minWidth: "70vw",
-                      maxWidth: "100vw",
-                      minHeight: "80vh",
-                      maxHeight: "80vh"
+                      minWidth: "70%",
+                      maxWidth: "100%",
+                      height: "80%"
                     } }
             >
               <Box
@@ -374,17 +363,15 @@ function UserInfoPage(): JSX.Element {
                         alignItems: "center",
                         flexDirection: "column",
                         width: "100%",
-                        minHeight: "75vh",
-                        maxHeight: "80vh"
+                        height: "100%"
                       } }
               >
-                <Box sx = { { width: "100%", minHeight: "5vh", maxHeight: "5vh" } }></Box>
+                <Box sx = { { width: "100%", height: "10%" } }></Box>
                 <Box
                         sx = { {
                           display: "grid",
                           width: "100%",
-                          minHeight: "7.5vh",
-                          maxHeight: "7.5vh"
+                          height: "10%"
                         } }
                 >
                   <Typography

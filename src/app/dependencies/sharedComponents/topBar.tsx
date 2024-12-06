@@ -136,8 +136,7 @@ export default function TopBar(): JSX.Element {
             justifyContent: "space-between",
             bgcolor: "primary.dark",
             width: "100%",
-            minHeight: "10vh",
-            maxHeight: "10vh"
+            height: "10%",
           } }
   >
     <Typography
@@ -146,7 +145,7 @@ export default function TopBar(): JSX.Element {
               marginLeft: "1em",
               color: "primary.contrastText",
               whiteSpace: "nowrap",
-              maxWidth: "50vw"
+              maxWidth: "50%"
             } }
     >
       社团活动信息管理系统
@@ -154,9 +153,8 @@ export default function TopBar(): JSX.Element {
     <Box
             sx = { {
               display: "flex",
-              minWidth: "50vw",
-              minHeight: "6vh",
-              maxHeight: "6vh"
+              minWidth: "50%",
+              height: "60%"
             } }
     >
       { session ? <ConsoleButtonGroup/> : <LoginButtonGroup/> }

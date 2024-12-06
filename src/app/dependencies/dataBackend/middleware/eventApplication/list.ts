@@ -171,7 +171,7 @@ export default async function listEventApplication(
                                       ON Society = s.Uuid
                       LEFT OUTER JOIN "Society".Venue v
                                       ON Venue = v.Uuid
-               WHERE ${ conditions.map(str => str.trim()).join(" AND ") }`;
+               WHERE ${ conditions.length ? conditions.map(str => str.trim()).join(" AND ") : "TRUE" }`;
   const client = await connect();
   try {
     const result = await client.query(query, params);

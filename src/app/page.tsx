@@ -16,8 +16,8 @@ export default function Home() {
       sx = { {
         alignItems: "center",
         justifyItems: "center",
-        width: "100%",
-        minHeight: "100vh"
+        width: "100vw",
+        height: "100vh"
       } }
     >
       <TopBar></TopBar>
@@ -28,8 +28,7 @@ export default function Home() {
           justifyItems: "center",
           bgcolor: "primary.main",
           width: "100%",
-          minHeight: "80vh",
-          maxHeight: "80vh"
+          height: "80%",
         } }
       >
         <Box

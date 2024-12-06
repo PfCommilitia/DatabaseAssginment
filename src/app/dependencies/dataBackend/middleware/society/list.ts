@@ -7,7 +7,7 @@ import {
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import processDBError from "@/app/dependencies/error/database";
 
-type Society = [
+export type Society = [
   string, // uuid
   string, // name
   string, // organisation
@@ -24,22 +24,22 @@ export default async function listSocieties(
   filterOrganisationHierarchy: string[] | null,
   filterManaged: boolean | null
 ): Promise<Society[]> {
-  const condition = [];
+  const conditions = [];
   const params: (string | string[] | boolean)[] = [];
   if (filterActive !== null) {
-    condition.push(`s.IsActive = $${ params.length + 1 }`);
+    conditions.push(`s.IsActive = $${ params.length + 1 }`);
     params.push(filterActive);
   }
   if (filterRepresentatives?.length) {
-    condition.push(`s.Representative = ANY($${ params.length + 1 })`);
+    conditions.push(`s.Representative = ANY($${ params.length + 1 })`);
     params.push(filterRepresentatives);
   }
   if (filterOrganisations?.length) {
-    condition.push(`s.Organisation = ANY($${ params.length + 1 })`);
+    conditions.push(`s.Organisation = ANY($${ params.length + 1 })`);
     params.push(filterOrganisations);
   }
   if (filterOrganisationHierarchy) {
-    condition.push(
+    conditions.push(
       `EXISTS (
         WITH RECURSIVE OrganisationHierarchy AS (
           SELECT o1.Uuid, o1.Parent
@@ -59,7 +59,7 @@ export default async function listSocieties(
     params.push(filterOrganisationHierarchy);
   }
   if (filterManaged !== null) {
-    condition.push(`
+    conditions.push(`
       EXISTS (
         WITH RECURSIVE OrganisationHierarchy AS (
           SELECT o1.Uuid, o1.Parent, o1.Representative
@@ -95,7 +95,7 @@ export default async function listSocieties(
                         LEFT OUTER JOIN "Society".Organisation o ON s.Organisation = o.Uuid
                         LEFT OUTER JOIN "Society".Individual i
                                         ON s.Representative = i.Username
-                 WHERE ${ condition.join(" AND ") }`;
+                 WHERE ${ conditions.length ? conditions.map(str => str.trim()).join(" AND ") : "TRUE" }`;
   const client = await connect();
   try {
     const result = await client.query(query, params);

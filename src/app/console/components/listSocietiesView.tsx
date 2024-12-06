@@ -11,8 +11,7 @@ import {
   TableRow,
   Typography
 } from "@mui/material";
-
-type SocietyData = [ string, string ][];
+import { Society } from "@/app/dependencies/dataBackend/middleware/society/list";
 
 export function ListSocietiesHorizontalControl(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -21,15 +20,16 @@ export function ListSocietiesHorizontalControl(
   return (<></>);
 }
 
-function SocietyViewRow([ uuid, name ]: [ string, string ]): JSX.Element {
+function SocietyViewRow([ uuid, name, organisation, isActive, representative, description ]:
+                        Society): JSX.Element {
   return (<TableRow
           sx = { {
-            minHeight: "5vh"
+            height: "6%"
           } }
   >
     <TableCell
             sx = { {
-              width: "45%"
+              width: "10%"
             } }
     >
       <Typography>
@@ -38,7 +38,7 @@ function SocietyViewRow([ uuid, name ]: [ string, string ]): JSX.Element {
     </TableCell>
     <TableCell
             sx = { {
-              width: "45%"
+              width: "10%"
             } }
     >
       <Typography>
@@ -50,6 +50,45 @@ function SocietyViewRow([ uuid, name ]: [ string, string ]): JSX.Element {
               width: "10%"
             } }
     >
+      <Typography>
+        { organisation }
+      </Typography>
+    </TableCell>
+    <TableCell
+            sx = { {
+              width: "10%"
+            } }
+    >
+      <Typography>
+        { isActive ? "活动" : "停止活动" }
+      </Typography>
+    </TableCell>
+    <TableCell
+            sx = { {
+              width: "10%"
+            } }
+    >
+      <Typography>
+        { representative }
+      </Typography>
+    </TableCell>
+    <TableCell
+            sx = { {
+              width: "40%"
+            } }
+    >
+      <Typography>
+        { description }
+      </Typography>
+    </TableCell>
+    <TableCell
+            sx = { {
+              width: "10%"
+            } }
+    >
+      <Typography>
+        操作
+      </Typography>
     </TableCell>
   </TableRow>);
 }
@@ -58,13 +97,20 @@ export function ListSocietiesView(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         { consoleState }: { consoleState: ConsoleState }
 ): JSX.Element {
-  const [ data, setData ] = useState<SocietyData | null>(null);
+  const [ data, setData ] = useState<Society[] | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch("/api/console/society/listJoined", {
-        method: "POST"
+      const response = await fetch("/api/console/society/list", {
+        method: "POST",
+        body: JSON.stringify({
+          filterActive: null,
+          filterRepresentatives: null,
+          filterOrganisations: null,
+          filterOrganisationHierarchy: null,
+          filterManaged: null
+        })
       });
       if (!response.ok) {
         const error = await response.json();
@@ -85,24 +131,25 @@ export function ListSocietiesView(
           <Box
                   sx = { {
                     width: "100%",
-                    minHeight: "90vh",
+                    height: "100%",
                     overflowX: "auto"
                   } }
           >
             <Table
                     sx = { {
-                      width: "100%"
+                      width: "100%",
+                      height: "100%"
                     } }
             >
-              <TableHead>
-                <TableRow
-                        sx = { {
-                          minHeight: "5vh"
-                        } }
-                >
+              <TableHead
+                      sx = { {
+                        height: "10%"
+                      } }
+              >
+                <TableRow>
                   <TableCell
                           sx = { {
-                            width: "45%"
+                            width: "10%"
                           } }
                   >
                     <Typography>
@@ -111,11 +158,47 @@ export function ListSocietiesView(
                   </TableCell>
                   <TableCell
                           sx = { {
-                            width: "45%"
+                            width: "10%"
                           } }
                   >
                     <Typography>
                       社团名称
+                    </Typography>
+                  </TableCell>
+                  <TableCell
+                          sx = { {
+                            width: "10%"
+                          } }
+                  >
+                    <Typography>
+                      所属组织
+                    </Typography>
+                  </TableCell>
+                  <TableCell
+                          sx = { {
+                            width: "10%"
+                          } }
+                  >
+                    <Typography>
+                      社团状态
+                    </Typography>
+                  </TableCell>
+                  <TableCell
+                          sx = { {
+                            width: "10%"
+                          } }
+                  >
+                    <Typography>
+                      负责人
+                    </Typography>
+                  </TableCell>
+                  <TableCell
+                          sx = { {
+                            width: "40%"
+                          } }
+                  >
+                    <Typography>
+                      描述
                     </Typography>
                   </TableCell>
                   <TableCell
@@ -129,7 +212,11 @@ export function ListSocietiesView(
                   </TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
+              <TableBody
+                      sx = { {
+                        height: "90%"
+                      } }
+              >
                 {
                         data && data.map(society => SocietyViewRow(society))
                 }

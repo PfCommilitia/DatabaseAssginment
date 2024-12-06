@@ -1,16 +1,14 @@
-export enum TabGroup {
-  Society = 0
-}
-
 export enum Tab {
-  ListSocietiesView = 0
+  User,
+  Organisation,
+  Society,
+  Venue,
+  SocietyApplication,
+  EventApplication,
+  EventParticipation
 }
 
 export interface ConsoleState {
-  expandedGroups: {
-    get: () => TabGroup[];
-    set: (newExpandedGroups: TabGroup[]) => void;
-  },
   tab: {
     get: () => Tab | null;
     set: (newTab: Tab | null) => void;

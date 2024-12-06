@@ -89,7 +89,7 @@ export default async function listUser(
     SELECT i.Username, i.Name, i.IsActive, i.IsInitialized, o.Name AS Organisation
     FROM "Society".Individual i
            LEFT OUTER JOIN "Society".Organisation o ON i.Organisation = o.Uuid
-    WHERE ${ conditions.join(" AND ") }
+    WHERE ${ conditions.length ? conditions.map(str => str.trim()).join(" AND ") : "TRUE" }
   `;
   const client = await connect();
   try {

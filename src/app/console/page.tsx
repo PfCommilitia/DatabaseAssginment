@@ -3,15 +3,15 @@
 import { useSelector } from "react-redux";
 import { RootState } from "@/app/dependencies/redux/store";
 import { NotLoggedIn } from "@/app/dependencies/sharedComponents/notLoggedIn";
-import { Box } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import TopBar from "@/app/dependencies/sharedComponents/topBar";
 import { useInitSession } from "@/app/dependencies/lib/initSession";
-import { TabGroup, Tab, ConsoleState } from "@/app/console/types";
+import { Tab, ConsoleState } from "@/app/console/types";
 import { useState } from "react";
 import { ListSocietiesView } from "@/app/console/components/listSocietiesView";
 
 function ConsoleMainView({ consoleState }: { consoleState: ConsoleState }): JSX.Element {
-  if (consoleState.tab.get() === Tab.ListSocietiesView) {
+  if (consoleState.tab.get() === Tab.Society) {
     return (<ListSocietiesView consoleState = { consoleState }></ListSocietiesView>);
   }
   return (<></>);
@@ -26,17 +26,67 @@ function ConsoleHorizontalControl({ consoleState }: {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ConsoleSidebar({ consoleState }: { consoleState: ConsoleState }): JSX.Element {
-  return (<></>);
+  function handleSetTab(newTab: Tab) {
+    consoleState.tab.set(newTab);
+  }
+
+  return (<Box
+          sx = { {
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
+            height: "100%",
+            overflowY: "auto"
+          } }
+  >
+    <Button
+            variant = { consoleState.tab.get() === Tab.User ? "contained" : "outlined" }
+            onClick = { () => handleSetTab(Tab.User) }
+    >
+      <Typography>用户</Typography>
+    </Button>
+    <Button
+            variant = { consoleState.tab.get() === Tab.Organisation ? "contained" : "outlined" }
+            onClick = { () => handleSetTab(Tab.Organisation) }
+    >
+      <Typography>组织</Typography>
+    </Button>
+    <Button
+            variant = { consoleState.tab.get() === Tab.Society ? "contained" : "outlined" }
+            onClick = { () => handleSetTab(Tab.Society) }
+    >
+      <Typography>社团</Typography>
+    </Button>
+    <Button
+            variant = { consoleState.tab.get() === Tab.Venue ? "contained" : "outlined" }
+            onClick = { () => handleSetTab(Tab.Venue) }
+    >
+      <Typography>场地</Typography>
+    </Button>
+    <Button
+            variant = { consoleState.tab.get() === Tab.SocietyApplication ? "contained" : "outlined" }
+            onClick = { () => handleSetTab(Tab.SocietyApplication) }
+    >
+      <Typography>社团申请</Typography>
+    </Button>
+    <Button
+            variant = { consoleState.tab.get() === Tab.EventApplication ? "contained" : "outlined" }
+            onClick = { () => handleSetTab(Tab.EventApplication) }
+    >
+      <Typography>活动申请</Typography>
+    </Button>
+    <Button
+            variant = { consoleState.tab.get() === Tab.EventParticipation ? "contained" : "outlined" }
+            onClick = { () => handleSetTab(Tab.EventParticipation) }
+    >
+      <Typography>活动参与</Typography>
+    </Button>
+  </Box>);
 }
 
 function ConsolePage(): JSX.Element {
-  const [ expandedGroups, setExpandedGroups ] = useState<TabGroup[]>([]);
-  const [ tab, setTab ] = useState<Tab | null>(Tab.ListSocietiesView);
+  const [ tab, setTab ] = useState<Tab | null>(null);
   const consoleState: ConsoleState = {
-    expandedGroups: {
-      get: () => expandedGroups,
-      set: (newExpandedGroups: TabGroup[]) => setExpandedGroups(newExpandedGroups)
-    },
     tab: {
       get: () => tab,
       set: (newTab: Tab | null) => setTab(newTab)
@@ -48,9 +98,8 @@ function ConsolePage(): JSX.Element {
                   sx = { {
                     alignItems: "center",
                     justifyItems: "center",
-                    width: "100%",
-                    minHeight: "100vh",
-                    maxHeight: "100vh"
+                    width: "100vw",
+                    height: "100vh",
                   } }
           >
             <TopBar></TopBar>
@@ -58,15 +107,13 @@ function ConsolePage(): JSX.Element {
                     sx = { {
                       display: "flex",
                       width: "100%",
-                      minHeight: "90vh",
-                      maxHeight: "90vh"
+                      height: "90%",
                     } }
             >
               <Box
                       sx = { {
                         width: "10%",
-                        minHeight: "90vh",
-                        maxHeight: "90vh"
+                        height: "100%",
                       } }
               >
                 <ConsoleSidebar consoleState = { consoleState }></ConsoleSidebar>
@@ -76,15 +123,13 @@ function ConsolePage(): JSX.Element {
                         display: "flex",
                         flexDirection: "column",
                         width: "90%",
-                        minHeight: "90vh",
-                        maxHeight: "90vh"
+                        height: "100%",
                       } }
               >
                 <Box
                         sx = { {
                           width: "100%",
-                          minHeight: "10vh",
-                          maxHeight: "10vh"
+                          height: "15%",
                         } }
                 >
                   <ConsoleHorizontalControl
@@ -93,8 +138,7 @@ function ConsolePage(): JSX.Element {
                 <Box
                         sx = { {
                           width: "100%",
-                          minHeight: "80vh",
-                          maxHeight: "80vh",
+                          height: "85%",
                           overflowY: "auto",
                           boxSizing: "border-box"
                         } }
