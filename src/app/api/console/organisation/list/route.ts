@@ -1,31 +1,25 @@
 import { NextResponse } from "next/server";
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import ServerError from "@/app/dependencies/error/errorType";
-import listEventApplication
-  from "@/app/dependencies/dataBackend/middleware/eventApplication/list";
+import listOrganisations
+  from "@/app/dependencies/dataBackend/middleware/organisation/list";
 
 export async function POST(request: Request) {
   try {
     const {
-      filterStatus,
-      filterSocieties,
-      filterOrganisations,
-      filterOrganisationHierarchy,
-      filterVenues,
-      filterTimeRange,
-      filterSelf,
-      filterApplicants,
+      filterRepresentatives,
+      filterHierarchy,
+      filterParents,
+      filterAncestors,
+      filterManaged,
       filterActive
     } = await request.json();
-    const result = await listEventApplication(
-      filterStatus,
-      filterSocieties,
-      filterOrganisations,
-      filterOrganisationHierarchy,
-      filterVenues,
-      filterTimeRange,
-      filterSelf,
-      filterApplicants,
+    const result = await listOrganisations(
+      filterRepresentatives,
+      filterHierarchy,
+      filterParents,
+      filterAncestors,
+      filterManaged,
       filterActive
     );
     return NextResponse.json({ payload: result }, { status: 200 });

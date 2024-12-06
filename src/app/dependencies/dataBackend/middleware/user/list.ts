@@ -18,7 +18,8 @@ type User = [
 export default async function listUser(
   filterOrganisation: string[] | null,
   filterOrganisationHierarchy: string[] | null,
-  filterSociety: string[] | null
+  filterSocieties: string[] | null,
+  filterActive: boolean | null
 ) {
   const session = await getServerSession();
   if (!session) {
@@ -28,7 +29,7 @@ export default async function listUser(
     throw ERROR_NO_USER_IN_SESSION;
   }
   const conditions = [];
-  const params: (string | string[])[] = [];
+  const params: (string | string[] | boolean)[] = [];
   conditions.push(`
     EXISTS (
       WITH RECURSIVE OrganisationHierarchy AS (
@@ -70,7 +71,7 @@ export default async function listUser(
     `);
     params.push(filterOrganisationHierarchy);
   }
-  if (filterSociety) {
+  if (filterSocieties) {
     conditions.push(`
       EXISTS (
         SELECT 1
@@ -78,7 +79,11 @@ export default async function listUser(
         WHERE m.Individual = i.Username AND m.Society = ANY($${ params.length + 1 })
       )`
     );
-    params.push(filterSociety);
+    params.push(filterSocieties);
+  }
+  if (filterActive !== null) {
+    conditions.push(`i.IsActive = $${ params.length + 1 }`);
+    params.push(filterActive);
   }
   const query = `
     SELECT i.Username, i.Name, i.IsActive, i.IsInitialized, o.Name AS Organisation
