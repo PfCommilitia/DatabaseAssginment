@@ -37,7 +37,8 @@ export default async function listEventParticipationApplications(
   filterApplicantSocieties: string[] | null,
   filterApplicantOrganisationHierarchy: string[] | null,
   filterApplicants: string[] | null,
-  filterSelf: boolean | null
+  filterSelf: boolean | null,
+  filterActive: boolean | null
 ): Promise<EventParticipationApplication[]> {
   const session = await getServerSession();
   if (!session) {
@@ -47,7 +48,7 @@ export default async function listEventParticipationApplications(
     throw ERROR_NO_USER_IN_SESSION;
   }
   const conditions = [];
-  const params: (string | string[] | Date)[] = [];
+  const params: (string | string[] | Date | boolean)[] = [];
   if (filterSelf) {
     conditions.push(`epa.Applicant = $${ params.length + 1 }`);
     params.push(session.user.name);
@@ -242,6 +243,10 @@ export default async function listEventParticipationApplications(
     }
     condition += ")";
     conditions.push(condition);
+  }
+  if (filterActive !== null) {
+    conditions.push(`epa.IsActive = $${ params.length + 1 }`);
+    params.push(filterActive);
   }
   const query = `
     SELECT epa.Uuid,

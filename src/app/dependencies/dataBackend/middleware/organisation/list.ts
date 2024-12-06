@@ -19,10 +19,11 @@ export default async function listOrganisations(
   filterHierarchy: string[] | null,
   filterParents: string[] | null,
   filterAncestors: string[] | null,
-  filterManaged: boolean | null
+  filterManaged: boolean | null,
+  filterActive: boolean | null
 ): Promise<Organisation[]> {
   const conditions = [];
-  const params: (string | string[] | Date)[] = [];
+  const params: (string | string[] | boolean)[] = [];
   if (filterRepresentatives?.length) {
     conditions.push(`o.Representative = ANY($${ params.length + 1 })`);
     params.push(filterRepresentatives);
@@ -97,6 +98,10 @@ export default async function listOrganisations(
       )
     `);
     params.push(session.user.name);
+  }
+  if (filterActive !== null) {
+    conditions.push(`o.IsActive = $${ params.length + 1 }`);
+    params.push(filterActive);
   }
   const query = `SELECT o.Uuid,
                         o.Name,

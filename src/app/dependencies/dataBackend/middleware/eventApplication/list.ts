@@ -29,7 +29,8 @@ export default async function listEventApplication(
   filterVenues: string[] | null,
   filterTimeRange: [ string, string ] | null,
   filterSelf: boolean | null,
-  filterApplicants: string | null
+  filterApplicants: string | null,
+  filterActive: boolean | null
 ): Promise<EventApplication[]> {
   const session = await getServerSession();
   if (!session) {
@@ -39,7 +40,7 @@ export default async function listEventApplication(
     throw ERROR_NO_USER_IN_SESSION;
   }
   const conditions = [];
-  const params: (string | string[] | Date)[] = [];
+  const params: (string | string[] | Date | boolean)[] = [];
   if (filterSelf) {
     conditions.push(`ea.Applicant = $${ params.length + 1 }`);
     params.push(session.user.name);
@@ -146,6 +147,10 @@ export default async function listEventApplication(
     }
     condition += `)`;
     conditions.push(condition);
+  }
+  if (filterActive !== null) {
+    conditions.push(`ea.IsActive = $${ params.length + 1 }`);
+    params.push(filterActive);
   }
   const query = `SELECT ea.Uuid,
                       i.Name,

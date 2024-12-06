@@ -25,7 +25,8 @@ export default async function listSocietyApplication(
   filterApplicants: string | null,
   filterApplicantOrganisationHierarchy: string[] | null,
   filterApplicationTimeRange: [ string, string ] | null,
-  filterSelf: boolean | null
+  filterSelf: boolean | null,
+  filterActive: boolean | null
 ) {
   const session = await getServerSession();
   if (!session) {
@@ -35,7 +36,7 @@ export default async function listSocietyApplication(
     throw ERROR_NO_USER_IN_SESSION;
   }
   const conditions = [];
-  const params: (string | string[] | Date)[] = [];
+  const params: (string | string[] | Date | boolean)[] = [];
   if (filterSelf) {
     conditions.push(`sa.Applicant = $${ params.length + 1 }`);
     params.push(session.user.name);
@@ -169,6 +170,10 @@ export default async function listSocietyApplication(
     }
     condition += ")";
     conditions.push(condition);
+  }
+  if (filterActive !== null) {
+    conditions.push(`sa.IsActive = $${ params.length + 1 }`);
+    params.push(filterActive);
   }
   const query = `SELECT sa.Uuid,
                         i.Username,

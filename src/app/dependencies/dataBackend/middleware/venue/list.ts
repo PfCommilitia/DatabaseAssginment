@@ -1,6 +1,11 @@
 import { connect } from "@/app/dependencies/dataBackend/dataSource";
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import processDBError from "@/app/dependencies/error/database";
+import { getServerSession } from "next-auth";
+import {
+  ERROR_NO_USER_IN_SESSION,
+  ERROR_SESSION_NOT_FOUND
+} from "@/app/dependencies/error/session";
 
 type Venue = [
   string, // uuid
@@ -17,7 +22,8 @@ export default async function listVenues(
   filterAvailable: boolean | null,
   filterOrganisations: string[] | null,
   filterOrganisationHierarchy: string[] | null,
-  filterTimeRangeAvailability: [ string, string ] | null
+  filterTimeRangeAvailability: [ string, string ] | null,
+  filterManaged: boolean | null
 ) {
   const conditions = [];
   const params: (boolean | string | string[] | Date)[] = [];
@@ -66,6 +72,33 @@ export default async function listVenues(
     params.push(new Date(filterTimeRangeAvailability[0]));
     params.push(new Date(filterTimeRangeAvailability[1]));
   }
+  if (filterManaged) {
+    const session = await getServerSession();
+    if (!session) {
+      throw ERROR_SESSION_NOT_FOUND;
+    }
+    if (!session.user?.name) {
+      throw ERROR_NO_USER_IN_SESSION;
+    }
+    conditions.push(`
+      EXISTS (
+        WITH RECURSIVE OrganisationHierarchy AS (
+          SELECT o3.Uuid, o3.Parent, o3.Representative
+            FROM "Society".Organisation o3
+            WHERE o3.Uuid = v.Organisation
+          UNION
+          SELECT o4.Uuid, o4.Parent, o4.Representative
+            FROM "Society".Organisation o4
+            JOIN OrganisationHierarchy oh
+            ON o4.Uuid = oh.Parent
+        )
+        SELECT 1
+        FROM OrganisationHierarchy oh
+        WHERE oh.Representative = $${ params.length + 1 }
+      )
+    `);
+    params.push(session.user.name);
+  }
   const query = `SELECT v.Uuid,
                         v.Name,
                         v.Address,
@@ -76,7 +109,7 @@ export default async function listVenues(
                         v.ImageURL
                  FROM "Society".Venue v
                         LEFT OUTER JOIN "Society".Organisation o
-                             ON v.Organisation = o.Uuid
+                                        ON v.Organisation = o.Uuid
                  WHERE ${ conditions.join(" AND ") }`;
   const client = await connect();
   try {
