@@ -171,8 +171,8 @@ export default async function listSocietyApplication(
     conditions.push(condition);
   }
   const query = `SELECT sa.Uuid,
-                        i.Applicant,
-                        s.Society,
+                        i.Username,
+                        s.Name,
                         sa.Description,
                         sa.IsActive,
                         saa.Result,
@@ -180,8 +180,8 @@ export default async function listSocietyApplication(
                  FROM "Society".SocietyApplication sa
                         LEFT OUTER JOIN "Society".SocietyApplicationApproval saa
                                         ON saa.Application = sa.Uuid
-                        JOIN "Society".Individual i ON i.Username = sa.Applicant
-                        JOIN "Society".Society s ON s.Uuid = sa.Society
+                        LEFT OUTER JOIN "Society".Individual i ON i.Username = sa.Applicant
+                        LEFT OUTER JOIN "Society".Society s ON s.Uuid = sa.Society
                  WHERE ${ conditions.join(" AND ") }`;
   const client = await connect();
   try {

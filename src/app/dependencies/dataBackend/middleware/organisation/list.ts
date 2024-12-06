@@ -103,7 +103,7 @@ export default async function listOrganisations(
                         i.Name AS Representative,
                         p.Name AS Parent
                  FROM "Society".Organisation o
-                        LEFT JOIN "Society".Individual i
+                        LEFT OUTER JOIN "Society".Individual i
                                   ON o.Representative = i.Username
                         LEFT OUTER JOIN "Society".Organisation p
                                         ON o.Parent = p.Uuid

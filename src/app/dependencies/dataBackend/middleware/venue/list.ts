@@ -75,7 +75,7 @@ export default async function listVenues(
                         v.Capacity,
                         v.ImageURL
                  FROM "Society".Venue v
-                        JOIN "Society".Organisation o
+                        LEFT OUTER JOIN "Society".Organisation o
                              ON v.Organisation = o.Uuid
                  WHERE ${ conditions.join(" AND ") }`;
   const client = await connect();
