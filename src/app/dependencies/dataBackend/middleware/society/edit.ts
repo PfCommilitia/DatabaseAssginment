@@ -6,7 +6,7 @@ import getSocietyPermission
   from "@/app/dependencies/dataBackend/middleware/society/getPermission";
 
 export default async function editSociety(
-  society: string,
+  society: number,
   name: string,
   description: string
 ):

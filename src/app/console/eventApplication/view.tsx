@@ -22,7 +22,7 @@ import {
 } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 type EventApplicationWithPermission = [
-  string, // uuid
+  number, // uuid
   string, // applicant
   string, // society
   string, // venue
@@ -37,11 +37,11 @@ type EventApplicationWithPermission = [
 
 interface EventApplicationRowProps {
   anchorEl: HTMLElement | null;
-  selectedRow: string | null;
+  selectedRow: number | null;
   selectedOption: string | null;
-  handleMenuOpen: (event: React.MouseEvent<HTMLElement>, rowId: string) => void;
+  handleMenuOpen: (event: React.MouseEvent<HTMLElement>, rowId: number) => void;
   handleMenuClose: () => void;
-  handleMenuSelect: (uuid: string, option: string) => void;
+  handleMenuSelect: (uuid: number, option: string) => void;
   handleDialogClose: () => void;
 }
 
@@ -89,7 +89,7 @@ function EventApplicationRow(router: AppRouterInstance, onSuccess: () => void, i
             } }
     >
       <Typography>
-        { isActive ? "有效" : "无效" }
+        { applicant }
       </Typography>
     </TableCell>
     <TableCell
@@ -98,7 +98,7 @@ function EventApplicationRow(router: AppRouterInstance, onSuccess: () => void, i
             } }
     >
       <Typography>
-        { applicant }
+        { isActive ? "有效" : "无效" }
       </Typography>
     </TableCell>
     <TableCell
@@ -125,7 +125,7 @@ function EventApplicationRow(router: AppRouterInstance, onSuccess: () => void, i
             } }
     >
       <Typography>
-        { new Date(startTime).toLocaleTimeString("zh-Hans-CN") }
+        { new Date(startTime).toLocaleString("zh-Hans-CN") }
       </Typography>
     </TableCell>
     <TableCell
@@ -134,7 +134,7 @@ function EventApplicationRow(router: AppRouterInstance, onSuccess: () => void, i
             } }
     >
       <Typography>
-        { new Date(endTime).toLocaleTimeString("zh-Hans-CN") }
+        { new Date(endTime).toLocaleString("zh-Hans-CN") }
       </Typography>
     </TableCell>
     <TableCell
@@ -182,38 +182,42 @@ function EventApplicationRow(router: AppRouterInstance, onSuccess: () => void, i
         >
           <Typography>查看</Typography>
         </MenuItem>
-        <MenuItem
-                onClick = { () => {
-                  props.handleMenuClose();
-                  props.handleDialogClose();
-                  fetch("/api/console/eventApplication/place", {
-                    method: "POST",
-                    body: JSON.stringify({ uuid })
-                  }).then(
-                          res => {
-                            if (!res.ok) {
-                              res.json().then(
-                                      error => {
-                                        if (error && error.error) {
-                                          router.push(`/error?error=${ encodeURIComponent(error.error) }`);
-                                        } else {
-                                          router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-                                        }
-                                      }
-                              ).catch(() => {
-                                router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-                              });
-                              return;
-                            }
-                            alert("申请成功");
-                            onSuccess();
-                          }
-                  );
-                } }
-        >
-          <Typography>申请参加</Typography>
-        </MenuItem>
         {
+          isActive ?
+                  (<MenuItem
+                          onClick = { () => {
+                            props.handleMenuClose();
+                            props.handleDialogClose();
+                            fetch("/api/console/eventParticipation/place", {
+                              method: "POST",
+                              body: JSON.stringify({ applyingEvent: uuid })
+                            }).then(
+                                    res => {
+                                      if (!res.ok) {
+                                        res.json().then(
+                                                error => {
+                                                  if (error && error.error) {
+                                                    router.push(`/error?error=${ encodeURIComponent(error.error) }`);
+                                                  } else {
+                                                    router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
+                                                  }
+                                                }
+                                        ).catch(() => {
+                                          router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
+                                        });
+                                        return;
+                                      }
+                                      alert("申请成功");
+                                      onSuccess();
+                                    }
+                            );
+                          } }
+                  >
+                    <Typography>申请参加</Typography>
+                  </MenuItem>) : null
+        }
+        {
+          isActive &&
           permission.length ? (<MenuItem
                   onClick = { () => {
                     props.handleMenuClose();
@@ -258,7 +262,7 @@ export default function View(
   const [ data, setData ] = useState<EventApplicationWithPermission[] | null>(null);
   const [ anchorEl, setAnchorEl ] = useState<null | HTMLElement>(null);
   const [ selectedOption, setSelectedOption ] = useState<string | null>(null);
-  const [ selectedRow, setSelectedRow ] = useState<string | null>(null);
+  const [ selectedRow, setSelectedRow ] = useState<number | null>(null);
   const [ init, setInit ] = useState<boolean>(false);
   const dispatch = useDispatch();
   const fetching = useSelector((state: RootState) => state.session.fetching);
@@ -272,10 +276,12 @@ export default function View(
       let filterStatus = null;
       let filterActive = null;
       if (filter.page?.[0] === "eventApplication") {
-        filterSocieties = filter.societyId?.length ? filter.societyId : null;
+        filterSocieties = filter.societyId?.length ? filter.societyId0 : null;
         filterTimeRange = filter.timeRange?.length ? filter.timeRange : null;
         filterStatus = filter.status?.length ? filter.status : null;
         filterActive = filter.active?.length ? true : null;
+      } else if (filter.page) {
+        consoleState.filter.set({});
       }
       const response = await fetch("/api/console/eventApplication/list", {
         method: "POST",
@@ -321,9 +327,9 @@ export default function View(
       dispatch(setFetching(false));
       fetchData();
     }
-  }, [consoleState.filter, dispatch, fetching, init, router]);
+  }, [ consoleState.filter, dispatch, fetching, init, router ]);
 
-  function handleMenuOpen(event: React.MouseEvent<HTMLElement>, rowId: string) {
+  function handleMenuOpen(event: React.MouseEvent<HTMLElement>, rowId: number) {
     setAnchorEl(event.currentTarget);
     setSelectedRow(rowId);
   }
@@ -332,7 +338,7 @@ export default function View(
     setAnchorEl(null);
   }
 
-  function handleMenuSelect(uuid: string, option: string) {
+  function handleMenuSelect(uuid: number, option: string) {
     setSelectedRow(uuid);
     setSelectedOption(option);
     handleMenuClose();

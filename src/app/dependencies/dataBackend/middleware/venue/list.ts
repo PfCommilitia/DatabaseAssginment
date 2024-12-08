@@ -8,7 +8,7 @@ import {
 } from "@/app/dependencies/error/session";
 
 export type Venue = [
-  string, // uuid
+  number, // uuid
   string, // name
   string, // address
   string, // description
@@ -20,13 +20,13 @@ export type Venue = [
 
 export default async function listVenues(
   filterAvailable: boolean | null,
-  filterOrganisations: string[] | null,
-  filterOrganisationHierarchy: string[] | null,
+  filterOrganisations: number[] | null,
+  filterOrganisationHierarchy: number[] | null,
   filterTimeRangeAvailability: [ string, string ] | null,
   filterManaged: boolean | null
 ) {
   const conditions = [];
-  const params: (boolean | string | string[] | Date)[] = [];
+  const params: (boolean | string | string[] | number[] | Date)[] = [];
   if (filterAvailable !== null) {
     conditions.push(`v.IsAvailable = $${ params.length + 1 }`);
     params.push(filterAvailable);

@@ -21,6 +21,10 @@ export default function EventParticipationControl(
 
   return (
           <Box
+                  display = "grid"
+                  gridTemplateColumns = "1fr 1fr 1fr 1fr 1fr"
+                  gridTemplateRows = "45% 45%"
+                  gap = "1em"
                   sx = { {
                     width: "100%",
                     height: "100%"
@@ -70,7 +74,10 @@ export default function EventParticipationControl(
                       setApplicant(event.target.value);
                     } }
             ></TextField>
-            <Box>
+            <Box
+                    display = "flex"
+                        alignItems = "center"
+            >
               <Checkbox
                       checked = { status.includes("approved") }
                       onChange = { (event) => {
@@ -84,7 +91,10 @@ export default function EventParticipationControl(
               </Checkbox>
               <Typography>已通过</Typography>
             </Box>
-            <Box>
+            <Box
+                        display = "flex"
+                        alignItems = "center"
+            >
               <Checkbox
                       checked = { status.includes("rejected") }
                       onChange = { (event) => {
@@ -98,7 +108,10 @@ export default function EventParticipationControl(
               </Checkbox>
               <Typography>已拒绝</Typography>
             </Box>
-            <Box>
+            <Box
+                        display = "flex"
+                        alignItems = "center"
+            >
               <Checkbox
                       checked = { status.includes("pending") }
                       onChange = { (event) => {
@@ -112,7 +125,10 @@ export default function EventParticipationControl(
               </Checkbox>
               <Typography>待审核</Typography>
             </Box>
-            <Box>
+            <Box
+                        display = "flex"
+                        alignItems = "center"
+            >
               <Checkbox
                       checked = { filterActive }
                       onChange = { (event) => {
@@ -122,7 +138,10 @@ export default function EventParticipationControl(
               </Checkbox>
               <Typography>仅显示有效</Typography>
             </Box>
-            <Box>
+            <Box
+                        display = "flex"
+                        alignItems = "center"
+            >
               <Checkbox
                       checked = { eventStatus.includes("approved") }
                       onChange = { (event) => {
@@ -139,12 +158,24 @@ export default function EventParticipationControl(
             <Button
                     variant = "contained"
                     onClick = { () => {
+                      if (eventId.split(",").filter(str => str.length).some(str => isNaN(parseInt(str.trim())))) {
+                        alert("活动Id必须为数字");
+                        return;
+                      }
+                      if (applicantSocietyId.split(",").filter(str => str.length).some(str => isNaN(parseInt(str.trim())))) {
+                        alert("申请人社团Id必须为数字");
+                        return;
+                      }
+                      if (applicantOrganisationId.split(",").filter(str => str.length).some(str => isNaN(parseInt(str.trim())))) {
+                        alert("申请人组织Id必须为数字");
+                        return;
+                      }
                       consoleState.filter.set({
-                        page: [ "eventApplication" ],
-                        eventId: eventId.split(",").map(str => str.trim()),
-                        applicantSocietyId: applicantSocietyId.split(",").map(str => str.trim()),
-                        applicantOrganisationId: applicantOrganisationId.split(",").map(str => str.trim()),
-                        applicant: applicant.split(",").map(str => str.trim()),
+                        page: [ "eventParticipation" ],
+                        eventId: eventId.split(",").filter(str => str.length).map(str => parseInt(str.trim())),
+                        applicantSocietyId: applicantSocietyId.split(",").filter(str => str.length).map(str => parseInt(str.trim())),
+                        applicantOrganisationId: applicantOrganisationId.split(",").filter(str => str.length).map(str => parseInt(str.trim())),
+                        applicant: applicant.split(",").filter(str => str.length).map(str => str.trim()),
                         status,
                         active: filterActive ? [ "" ] : [],
                         eventStatus

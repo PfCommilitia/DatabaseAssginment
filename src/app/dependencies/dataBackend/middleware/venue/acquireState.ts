@@ -3,7 +3,7 @@ import processDBError from "@/app/dependencies/error/database";
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import { Venue } from "@/app/dependencies/dataBackend/middleware/venue/list";
 
-export default async function acquireVenueState(venue: string) {
+export default async function acquireVenueState(venue: number) {
   const client = await connect();
   try {
     const result = await client.query(

@@ -10,7 +10,7 @@ import processDBError, { ERROR_PARSING_DATE } from "@/app/dependencies/error/dat
 import { EventApplication } from "@/app/dependencies/dataBackend/middleware/eventApplication/list";
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 
-export default async function acquireEventApplicationState(eventApplication: string) {
+export default async function acquireEventApplicationState(eventApplication: number) {
   const session = await getServerSession();
   if (!session) {
     throw ERROR_SESSION_NOT_FOUND;
@@ -45,14 +45,13 @@ export default async function acquireEventApplicationState(eventApplication: str
                                                     WHERE ea.Uuid = $1
                                                   ))
                                   UNION
-                                  SELECT o.Uuid, o.Parent, o.Representative
-                                  FROM "Society".Organisation o
+                                  SELECT o1.Uuid, o1.Parent, o1.Representative
+                                  FROM "Society".Organisation o1
                                          JOIN OrganisationHierarchy oh
-                                              ON oh.Parent = o.Uuid)
+                                              ON oh.Parent = o1.Uuid)
              SELECT 1
              FROM OrganisationHierarchy oh
-             WHERE oh.Representative = $2) AS oh
-       LIMIT 1`,
+             WHERE oh.Representative = $2) AS oh`,
       [ eventApplication, session.user.name ]
     );
     if (!permissionCheck.rowCount) {
@@ -61,9 +60,9 @@ export default async function acquireEventApplicationState(eventApplication: str
 
     const result = await client.query(
       `SELECT ea.Uuid,
-              i.Name,
-              s.Name,
-              v.Name,
+              i.Name AS Applicant,
+              s.Name AS Society,
+              v.Name AS Venue,
               TimeRange,
               Title,
               ea.Description,

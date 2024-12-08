@@ -9,7 +9,7 @@ import processDBError, { ERROR_PARSING_DATE } from "@/app/dependencies/error/dat
 import { parse as parseRange } from "postgres-range";
 
 export type EventApplication = [
-  string, // uuid
+  number, // uuid
   string, // applicant
   string, // society
   string, // venue
@@ -23,13 +23,13 @@ export type EventApplication = [
 
 export default async function listEventApplication(
   filterStatus: ("approved" | "rejected" | "pending")[] | null,
-  filterSocieties: string[] | null,
-  filterOrganisations: string[] | null,
-  filterOrganisationHierarchy: string[] | null,
-  filterVenues: string[] | null,
+  filterSocieties: number[] | null,
+  filterOrganisations: number[] | null,
+  filterOrganisationHierarchy: number[] | null,
+  filterVenues: number[] | null,
   filterTimeRange: [ string, string ] | null,
   filterSelf: boolean | null,
-  filterApplicants: string | null,
+  filterApplicants: number[] | null,
   filterActive: boolean | null
 ): Promise<EventApplication[]> {
   const session = await getServerSession();
@@ -40,34 +40,9 @@ export default async function listEventApplication(
     throw ERROR_NO_USER_IN_SESSION;
   }
   const conditions = [];
-  const params: (string | string[] | Date | boolean)[] = [];
+  const params: (string | number[] | Date | boolean)[] = [];
   if (filterSelf) {
     conditions.push(`ea.Applicant = $${ params.length + 1 }`);
-    params.push(session.user.name);
-  } else {
-    conditions.push(
-      `(ea.Applicant = $${ params.length + 1 } OR
-       EXISTS (SELECT 1 FROM "Society".Society ss WHERE ss.Uuid = ea.Society AND ss.Representative = $${ params.length + 1 }) OR
-       EXISTS (
-        WITH RECURSIVE OrganisationHierarchy AS (
-          SELECT o1.Uuid, o1.Parent, o1.Representative
-            FROM "Society".Organisation o1
-            WHERE o1.Uuid = (
-              SELECT v2.Organisation
-              FROM "Society".Venue v2
-              WHERE v2.Uuid = ea.Society
-            )
-          UNION
-          SELECT o2.Uuid, o2.Parent, o2.Representative
-            FROM "Society".Organisation o2
-            JOIN OrganisationHierarchy oh
-            ON oh.Parent = o2.Uuid
-        )
-        SELECT 1
-        FROM OrganisationHierarchy oh
-        WHERE oh.Representative = $${ params.length + 1 }
-      ))`
-    );
     params.push(session.user.name);
   }
   if (filterApplicants?.length) {
@@ -155,9 +130,9 @@ export default async function listEventApplication(
     params.push(filterActive);
   }
   const query = `SELECT ea.Uuid,
-                      i.Name,
-                      s.Name,
-                      v.Name,
+                      i.Name AS Applicant,
+                      s.Name AS Society,
+                      v.Name AS Venue,
                       TimeRange,
                       Title,
                       ea.Description,
@@ -166,13 +141,13 @@ export default async function listEventApplication(
                       Result
                FROM "Society".EventApplication ea
                       LEFT OUTER JOIN "Society".EventApplicationApproval eaa
-                                      ON Uuid = Application
+                                      ON ea.Uuid = eaa.Application
                       LEFT OUTER JOIN "Society".Individual i
-                                      ON Applicant = Username
+                                      ON ea.Applicant = i.Username
                       LEFT OUTER JOIN "Society".Society s
-                                      ON Society = s.Uuid
+                                      ON ea.Society = s.Uuid
                       LEFT OUTER JOIN "Society".Venue v
-                                      ON Venue = v.Uuid
+                                      ON ea.Venue = v.Uuid
                WHERE ${ conditions.length ? conditions.map(str => str.trim()).join(" AND ") : "TRUE" }`;
   const client = await connect();
   try {

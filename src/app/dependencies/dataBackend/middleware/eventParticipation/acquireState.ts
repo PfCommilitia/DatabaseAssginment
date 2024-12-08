@@ -10,7 +10,7 @@ import processDBError, { ERROR_PARSING_DATE } from "@/app/dependencies/error/dat
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import { EventParticipationApplication } from "@/app/dependencies/dataBackend/middleware/eventParticipation/list";
 
-export default async function acquireEventParticipationState(eventParticipation: string) {
+export default async function acquireEventParticipationState(eventParticipation: number) {
   const session = await getServerSession();
   if (!session) {
     throw ERROR_SESSION_NOT_FOUND;

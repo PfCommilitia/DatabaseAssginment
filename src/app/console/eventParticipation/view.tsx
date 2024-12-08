@@ -21,7 +21,8 @@ import ViewEventParticipationDialog
   from "@/app/console/eventParticipation/operation/detail";
 
 type EventParticipationWithPermission = [
-  string, // uuid
+  number, // uuid
+  number, // eventId
   string, // applicant
   string, // society
   string, // venue
@@ -38,11 +39,11 @@ type EventParticipationWithPermission = [
 
 interface EventParticipationRowProps {
   anchorEl: HTMLElement | null;
-  selectedRow: string | null;
+  selectedRow: number | null;
   selectedOption: string | null;
-  handleMenuOpen: (event: React.MouseEvent<HTMLElement>, rowId: string) => void;
+  handleMenuOpen: (event: React.MouseEvent<HTMLElement>, rowId: number) => void;
   handleMenuClose: () => void;
-  handleMenuSelect: (uuid: string, option: string) => void;
+  handleMenuSelect: (uuid: number, option: string) => void;
   handleDialogClose: () => void;
 }
 
@@ -51,8 +52,8 @@ function EventParticipationRow(router: AppRouterInstance, onSuccess: () => void,
   const applyingEvent = item[1];
   const applicant = item[2];
   const isActive = item[10];
-  const status = item[11];
-  const permission = item[12];
+  const status = item[12];
+  const permission = item[13];
 
   return (<TableRow
           key = { uuid }
@@ -134,6 +135,7 @@ function EventParticipationRow(router: AppRouterInstance, onSuccess: () => void,
           <Typography>查看</Typography>
         </MenuItem>
         {
+          isActive &&
           permission.length ? (<MenuItem
                   onClick = { () => {
                     props.handleMenuClose();
@@ -178,7 +180,7 @@ export default function View(
   const [ data, setData ] = useState<EventParticipationWithPermission[] | null>(null);
   const [ anchorEl, setAnchorEl ] = useState<null | HTMLElement>(null);
   const [ selectedOption, setSelectedOption ] = useState<string | null>(null);
-  const [ selectedRow, setSelectedRow ] = useState<string | null>(null);
+  const [ selectedRow, setSelectedRow ] = useState<number | null>(null);
   const [ init, setInit ] = useState<boolean>(false);
   const dispatch = useDispatch();
   const fetching = useSelector((state: RootState) => state.session.fetching);
@@ -186,12 +188,12 @@ export default function View(
 
   useEffect(() => {
     const filter = consoleState.filter.get();
-    let filterParticipationStatus: string[] | null = null;
-    let filterEvents: string[] | null = null;
-    let filterApplicantSocieties: string[] | null = null;
-    let filterApplicantOrganisationHierarchy: string[] | null = null;
-    let filterApplicants: string[] | null = null;
-    let filterStatus: string[] | null = null;
+    let filterParticipationStatus: string[] | number[] | null = null;
+    let filterEvents: string[] | number[] | null = null;
+    let filterApplicantSocieties: string[] | number[] | null = null;
+    let filterApplicantOrganisationHierarchy: string[] | number[] | null = null;
+    let filterApplicants: string[] | number[] | null = null;
+    let filterStatus: string[] | number[] | null = null;
     let filterActive: boolean | null = null;
     if (filter.page?.[0] === "eventParticipation") {
       filterParticipationStatus = filter.status?.length ? filter.status : null;
@@ -200,8 +202,8 @@ export default function View(
       filterApplicantOrganisationHierarchy = filter.applicantOrganisationId?.length ? filter.applicantOrganisationId : null;
       filterApplicants = filter.applicant?.length ? filter.applicant : null;
       filterStatus = filter.eventStatus?.length ? filter.eventStatus : null;
-      filterActive = filter.filterActive?.length ? true : null;
-    } else {
+      filterActive = filter.active?.length ? true : null;
+    } else if (filter.page) {
       consoleState.filter.set({});
     }
 
@@ -237,7 +239,7 @@ export default function View(
       const data = await response.json();
 
       for (const society of data.payload) {
-        const res1 = await fetch("/api/console/Participation/getPermission", {
+        const res1 = await fetch("/api/console/eventParticipation/getPermission", {
           method: "POST",
           body: JSON.stringify({ uuid: society[0] })
         });
@@ -256,9 +258,9 @@ export default function View(
       dispatch(setFetching(false));
       fetchData();
     }
-  }, [consoleState.filter, dispatch, fetching, init, router]);
+  }, [ consoleState.filter, dispatch, fetching, init, router ]);
 
-  function handleMenuOpen(event: React.MouseEvent<HTMLElement>, rowId: string) {
+  function handleMenuOpen(event: React.MouseEvent<HTMLElement>, rowId: number) {
     setAnchorEl(event.currentTarget);
     setSelectedRow(rowId);
   }
@@ -267,7 +269,7 @@ export default function View(
     setAnchorEl(null);
   }
 
-  function handleMenuSelect(uuid: string, option: string) {
+  function handleMenuSelect(uuid: number, option: string) {
     setSelectedRow(uuid);
     setSelectedOption(option);
     handleMenuClose();

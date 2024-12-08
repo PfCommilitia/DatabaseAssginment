@@ -9,8 +9,8 @@ import processDBError, { ERROR_PARSING_DATE } from "@/app/dependencies/error/dat
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 
 export type EventParticipationApplication = [
-  string, // uuid
-  string, // target
+  number, // uuid
+  number, // target
   string, // applicant
   string, // society
   string, // venue
@@ -27,16 +27,16 @@ export type EventParticipationApplication = [
 export default async function listEventParticipationApplications(
   filterStatus: ("approved" | "rejected" | "pending")[] | null,
   filterParticipationStatus: ("approved" | "rejected" | "pending")[] | null,
-  filterEvents: string[] | null,
-  filterSocieties: string[] | null,
-  filterOrganisations: string[] | null,
-  filterOrganisationHierarchy: string[] | null,
+  filterEvents: number[] | null,
+  filterSocieties: number[] | null,
+  filterOrganisations: number[] | null,
+  filterOrganisationHierarchy: number[] | null,
   filterOrganisers: string[] | null,
-  filterVenues: string[] | null,
+  filterVenues: number[] | null,
   filterTimeRange: [ string, string ] | null,
   filterApplicationTimeRange: [ string, string ] | null,
-  filterApplicantSocieties: string[] | null,
-  filterApplicantOrganisationHierarchy: string[] | null,
+  filterApplicantSocieties: number[] | null,
+  filterApplicantOrganisationHierarchy: number[] | null,
   filterApplicants: string[] | null,
   filterSelf: boolean | null,
   filterActive: boolean | null
@@ -49,7 +49,7 @@ export default async function listEventParticipationApplications(
     throw ERROR_NO_USER_IN_SESSION;
   }
   const conditions = [];
-  const params: (string | string[] | Date | boolean)[] = [];
+  const params: (string | string[] | number[] | Date | boolean)[] = [];
   if (filterSelf) {
     conditions.push(`epa.Applicant = $${ params.length + 1 }`);
     params.push(session.user.name);
@@ -67,12 +67,13 @@ export default async function listEventParticipationApplications(
             SELECT o1.Uuid, o1.Parent, o1.Representative
             FROM "Society".Organisation o1
             JOIN OrganisationHierarchy oh
-            WHERE o1.Uuid = oh.Parent
+            ON o1.Uuid = oh.Parent
           )
           SELECT 1
           FROM OrganisationHierarchy oh
           WHERE oh.Representative = $${ params.length + 1 }
         )
+      )
     `);
     params.push(session.user.name);
   }
@@ -183,6 +184,7 @@ export default async function listEventParticipationApplications(
               SELECT 1
               FROM "Society".EventApplicationApproval eaa0
               WHERE eaa0.Application = ea.Uuid AND eaa0.Result
+            )
           `;
         }
         if (filterStatus[i] === "rejected") {
@@ -191,6 +193,7 @@ export default async function listEventParticipationApplications(
               SELECT 1
               FROM "Society".EventApplicationApproval eaa1
               WHERE eaa1.Application = ea.Uuid AND NOT eaa1.Result
+            )
           `;
         }
         if (filterStatus[i] === "pending") {
@@ -199,6 +202,7 @@ export default async function listEventParticipationApplications(
               SELECT 1
               FROM "Society".EventApplicationApproval eaa2
               WHERE eaa2.Application = ea.Uuid
+            )
           `;
         }
       })();
@@ -218,7 +222,8 @@ export default async function listEventParticipationApplications(
             EXISTS (
               SELECT 1
               FROM "Society".EventParticipationApproval epaa0
-              WHERE epaa0.Application = ea.Uuid AND epa0.Result
+              WHERE epaa0.Application = epa.Uuid AND epaa0.Result
+            )
           `;
         }
         if (filterParticipationStatus[i] === "rejected") {
@@ -226,7 +231,8 @@ export default async function listEventParticipationApplications(
             EXISTS (
               SELECT 1
               FROM "Society".EventParticipationApproval epaa1
-              WHERE epaa1.Application = ea.Uuid AND NOT epa1.Result
+              WHERE epaa1.Application = epa.Uuid AND NOT epaa1.Result
+            )
           `;
         }
         if (filterParticipationStatus[i] === "pending") {
@@ -234,7 +240,8 @@ export default async function listEventParticipationApplications(
             NOT EXISTS (
               SELECT 1
               FROM "Society".EventParticipationApproval epaa2
-              WHERE epaa2.Application = ea.Uuid
+              WHERE epaa2.Application = epa.Uuid
+            )
           `;
         }
       })();
@@ -306,6 +313,7 @@ export default async function listEventParticipationApplications(
     if (!(e instanceof Error)) {
       throw ERROR_UNKNOWN;
     }
+    console.log(e);
     e = processDBError(e);
     throw e;
   } finally {

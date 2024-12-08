@@ -94,7 +94,7 @@ export default function View(
         filterOrganisationHierarchy = filter.organisationId?.length ? filter.organisationId : null;
         filterSocieties = filter.societyId?.length ? filter.societyId : null;
         filterEvents = filter.eventId?.length ? filter.eventId : null;
-      } else {
+      } else if (filter.page) {
         consoleState.filter.set({});
       }
       const response = await fetch("/api/console/user/list", {

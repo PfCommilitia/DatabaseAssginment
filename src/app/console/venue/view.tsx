@@ -23,7 +23,7 @@ import ApplyForEventDialog from "@/app/console/venue/operation/applyEvent";
 import { ConsoleState } from "@/app/console/types";
 
 type VenueWithRole = [
-  string, // uuid
+  number, // uuid
   string, // name
   string, // address
   string, // description
@@ -36,11 +36,11 @@ type VenueWithRole = [
 
 interface VenueRowProps {
   anchorEl: HTMLElement | null;
-  selectedRow: string | null;
+  selectedRow: number | null;
   selectedOption: string | null;
-  handleMenuOpen: (event: React.MouseEvent<HTMLElement>, rowId: string) => void;
+  handleMenuOpen: (event: React.MouseEvent<HTMLElement>, rowId: number) => void;
   handleMenuClose: () => void;
-  handleMenuSelect: (uuid: string, option: string) => void;
+  handleMenuSelect: (uuid: number, option: string) => void;
   handleDialogClose: () => void;
 }
 
@@ -158,7 +158,7 @@ export default function View(
   const [ data, setData ] = useState<VenueWithRole[] | null>(null);
   const [ anchorEl, setAnchorEl ] = useState<null | HTMLElement>(null);
   const [ selectedOption, setSelectedOption ] = useState<string | null>(null);
-  const [ selectedRow, setSelectedRow ] = useState<string | null>(null);
+  const [ selectedRow, setSelectedRow ] = useState<number | null>(null);
   const [ init, setInit ] = useState<boolean>(false);
   const dispatch = useDispatch();
   const fetching = useSelector((state: RootState) => state.session.fetching);
@@ -171,7 +171,9 @@ export default function View(
       let filterTimeRangeAvailability = null;
       if (filter.page?.[0] === "venue") {
         filterOrganisationHierarchy = filter.organisationId?.length ? filter.organisationId : null;
-        filterTimeRangeAvailability = filter.timeRange ? filter.timeRange : null;
+        filterTimeRangeAvailability = filter.timeRange?.length ? filter.timeRange : null;
+      } else if (filter.page) {
+        consoleState.filter.set({});
       }
       const response = await fetch("/api/console/venue/list", {
         method: "POST",
@@ -222,7 +224,7 @@ export default function View(
     }
   }, [consoleState.filter, dispatch, fetching, init, router]);
 
-  function handleMenuOpen(event: React.MouseEvent<HTMLElement>, rowId: string) {
+  function handleMenuOpen(event: React.MouseEvent<HTMLElement>, rowId: number) {
     setAnchorEl(event.currentTarget);
     setSelectedRow(rowId);
   }
@@ -231,7 +233,7 @@ export default function View(
     setAnchorEl(null);
   }
 
-  function handleMenuSelect(uuid: string, option: string) {
+  function handleMenuSelect(uuid: number, option: string) {
     setSelectedRow(uuid);
     setSelectedOption(option);
     handleMenuClose();

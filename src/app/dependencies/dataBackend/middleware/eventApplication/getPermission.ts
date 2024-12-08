@@ -7,7 +7,7 @@ import {
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import processDBError from "@/app/dependencies/error/database";
 
-export default async function getEventApplicationPermission(uuid: string) {
+export default async function getEventApplicationPermission(uuid: number) {
   const session = await getServerSession();
   if (!session) {
     throw ERROR_SESSION_NOT_FOUND;
@@ -83,7 +83,7 @@ export default async function getEventApplicationPermission(uuid: string) {
               SELECT 1
               FROM OrganisationHierarchy oh
               WHERE oh.Representative = $2) AS t
-      `
+      `, [ uuid, session.user.name ]
     );
     if (result4.rowCount) {
       permissions.push("approve");

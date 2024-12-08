@@ -91,7 +91,7 @@ export default function View(
       let filterHierarchy = null;
       if (filter.page?.[0] === "organisation") {
         filterHierarchy = filter.organisationId?.length ? filter.organisationId : null;
-      } else {
+      } else if (filter.page) {
         consoleState.filter.set({});
       }
       const response = await fetch("/api/console/organisation/list", {

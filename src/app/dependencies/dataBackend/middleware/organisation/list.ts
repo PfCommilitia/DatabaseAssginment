@@ -8,7 +8,7 @@ import {
 } from "@/app/dependencies/error/session";
 
 export type Organisation = [
-  string, // uuid
+  number, // uuid
   string, // name
   string, // Representative.Name
   string, // Parent.Name
@@ -17,14 +17,14 @@ export type Organisation = [
 
 export default async function listOrganisations(
   filterRepresentatives: string[] | null,
-  filterHierarchy: string[] | null,
-  filterParents: string[] | null,
-  filterAncestors: string[] | null,
+  filterHierarchy: number[] | null,
+  filterParents: number[] | null,
+  filterAncestors: number[] | null,
   filterManaged: boolean | null,
   filterActive: boolean | null
 ): Promise<Organisation[]> {
   const conditions = [];
-  const params: (string | string[] | boolean)[] = [];
+  const params: (string | string[] | number[] | boolean)[] = [];
   if (filterRepresentatives?.length) {
     conditions.push(`o.Representative = ANY($${ params.length + 1 })`);
     params.push(filterRepresentatives);

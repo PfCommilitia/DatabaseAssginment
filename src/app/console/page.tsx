@@ -137,7 +137,7 @@ function ConsoleSidebar({ consoleState }: { consoleState: ConsoleState }): JSX.E
 
 function ConsolePage(): JSX.Element {
   const [ tab, setTab ] = useState<Tab | null>(null);
-  const [ filter, setFilter ] = useState<Record<string, string[]>>({});
+  const [ filter, setFilter ] = useState<Record<string, string[] | number[]>>({});
   const consoleState: ConsoleState = {
     tab: {
       get: () => tab,
@@ -145,7 +145,7 @@ function ConsolePage(): JSX.Element {
     },
     filter: {
       get: () => filter,
-      set: (newFilter: Record<string, string[]>) => setFilter(newFilter)
+      set: (newFilter: Record<string, string[] | number[]>) => setFilter(newFilter)
     }
   };
 

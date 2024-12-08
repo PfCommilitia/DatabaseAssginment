@@ -19,11 +19,11 @@ export type User = [
 ]
 
 export default async function listUser(
-  filterOrganisation: string[] | null,
-  filterOrganisationHierarchy: string[] | null,
-  filterSocieties: string[] | null,
+  filterOrganisation: number[] | null,
+  filterOrganisationHierarchy: number[] | null,
+  filterSocieties: number[] | null,
   filterActive: boolean | null,
-  filterEvents: string[] | null
+  filterEvents: number[] | null
 ) {
   const session = await getServerSession();
   if (!session) {
@@ -33,7 +33,7 @@ export default async function listUser(
     throw ERROR_NO_USER_IN_SESSION;
   }
   const conditions = [];
-  const params: (string | string[] | boolean)[] = [];
+  const params: (string | string[] | number[] | boolean)[] = [];
   conditions.push(`
     (i.Username = $${ params.length + 1 } OR EXISTS (
       WITH RECURSIVE OrganisationHierarchy AS (
@@ -48,7 +48,37 @@ export default async function listUser(
       )
       SELECT 1
       FROM OrganisationHierarchy oh
-      WHERE Representative = $${ params.length + 1 })
+      WHERE Representative = $${ params.length + 1 }) OR EXISTS (
+        SELECT 1
+        FROM "Society".Society s0
+        WHERE s0.Uuid = (
+          SELECT m0.Society
+          FROM "Society".Membership m0
+          WHERE m0.Individual = i.Username
+        ) AND s0.Representative = $${ params.length + 1 }
+      ) OR EXISTS (
+        WITH RECURSIVE OrganisationHierarchy AS (
+          SELECT o2.Uuid, o2.Parent, o2.Representative
+            FROM "Society".Organisation o2
+            WHERE o2.Uuid = (
+              SELECT s0.Organisation
+              FROM "Society".Society s0
+              WHERE s0.Uuid = (
+                SELECT m0.Society
+                FROM "Society".Membership m0
+                WHERE m0.Individual = i.Username
+              )
+            )
+          UNION
+          SELECT o3.Uuid, o3.Parent, o3.Representative
+            FROM "Society".Organisation o3
+            JOIN OrganisationHierarchy oh
+            ON o3.Uuid = oh.Parent
+        )
+        SELECT 1
+        FROM OrganisationHierarchy oh
+        WHERE Representative = $${ params.length + 1 }
+      ))
   `);
   params.push(session.user.name);
   if (filterOrganisation) {
@@ -66,7 +96,7 @@ export default async function listUser(
           SELECT o2.Uuid, o2.Parent, o2.Representative
             FROM "Society".Organisation o2
             JOIN OrganisationHierarchy oh
-            ON o1.Uuid = oh.Parent
+            ON o2.Uuid = oh.Parent
         )
         SELECT 1
         FROM OrganisationHierarchy oh
@@ -120,15 +150,15 @@ export default async function listUser(
   const client = await connect();
   try {
     const result = await client.query(query, params);
-    if (!result.rows) {
+    if (!result.rowCount) {
       return [];
     }
     return result.rows.map(row => [
-      row.Username,
-      row.Name,
-      row.IsActive,
-      row.IsInitialized,
-      row.Organisation
+      row.username,
+      row.name,
+      row.isactive,
+      row.isinitialized,
+      row.organisation
     ]) as User[];
   } catch (e) {
     if (!(e instanceof Error)) {

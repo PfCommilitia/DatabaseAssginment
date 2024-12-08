@@ -17,7 +17,7 @@ import {
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import { setFetching } from "@/app/dependencies/redux/stateSlices/session";
 
-function approveEventParticipation(router: AppRouterInstance, onSuccess: () => void, uuid: string, message: string, result: boolean) {
+function approveEventParticipation(router: AppRouterInstance, onSuccess: () => void, uuid: number, message: string, result: boolean) {
   fetch("/api/console/eventParticipation/approve", {
     method: "POST",
     body: JSON.stringify({
@@ -48,12 +48,12 @@ function approveEventParticipation(router: AppRouterInstance, onSuccess: () => v
 }
 
 export default function ViewEventParticipationDialog({ row, option, handleCloseAction }: {
-  row: string | null,
+  row: number | null,
   option: string | null,
   handleCloseAction: () => void
 }) {
-  const [ uuid, setUuid ] = useState<string>("");
-  const [ applyingEvent, setApplyingEvent ] = useState<string>("");
+  const [ uuid, setUuid ] = useState<number>(0);
+  const [ applyingEvent, setApplyingEvent ] = useState<number>(0);
   const [ applicant, setApplicant ] = useState<string>("");
   const [ timestamp, setTimestamp ] = useState<string>("");
   const [ isActive, setIsActive ] = useState<string>("");
@@ -65,9 +65,9 @@ export default function ViewEventParticipationDialog({ row, option, handleCloseA
 
   useEffect(() => {
     async function fetchData() {
-      const response = await fetch("/api/console/eventApplication/acquireState", {
+      const response = await fetch("/api/console/eventParticipation/acquireState", {
         method: "POST",
-        body: JSON.stringify({ application: row })
+        body: JSON.stringify({ eventParticipation: row })
       });
       const data = (await response.json()).payload;
       setUuid(data[0]);
@@ -79,8 +79,8 @@ export default function ViewEventParticipationDialog({ row, option, handleCloseA
         "approved": "已通过",
         "rejected": "已拒绝",
         "pending": "待审核"
-      }[data[11] as "approved" | "rejected" | "pending"]);
-      const res1 = await fetch("/api/console/eventApplication/getPermission", {
+      }[data[12] as "approved" | "rejected" | "pending"]);
+      const res1 = await fetch("/api/console/eventParticipation/getPermission", {
         method: "POST",
         body: JSON.stringify({ uuid: row })
       });
@@ -111,7 +111,7 @@ export default function ViewEventParticipationDialog({ row, option, handleCloseA
               type = "text"
               fullWidth
               variant = "standard"
-              value = { uuid }
+              value = { uuid.toString() }
               disabled
       ></TextField>
       <TextField
@@ -120,7 +120,7 @@ export default function ViewEventParticipationDialog({ row, option, handleCloseA
               type = "text"
               fullWidth
               variant = "standard"
-              value = { applyingEvent }
+              value = { applyingEvent.toString() }
               disabled
       ></TextField>
       <TextField
@@ -168,6 +168,7 @@ export default function ViewEventParticipationDialog({ row, option, handleCloseA
                         fullWidth
                         variant = "standard"
                         value = { message }
+                        disabled = { status !== "待审核" }
                         onChange = { (e) => setMessage(e.target.value) }
                 ></TextField>
         ) : null
@@ -175,7 +176,8 @@ export default function ViewEventParticipationDialog({ row, option, handleCloseA
     </DialogContent>
     <DialogActions>
       {
-        permission.includes("admin") || permission.includes("approve") ? (
+        status === "待审核" &&
+        (permission.includes("admin") || permission.includes("approve")) ? (
                 <Button
                         onClick = { () => {
                           if (!message) {
@@ -193,7 +195,8 @@ export default function ViewEventParticipationDialog({ row, option, handleCloseA
         ) : null
       }
       {
-        permission.includes("admin") || permission.includes("approve") ? (
+        status === "待审核" &&
+        (permission.includes("admin") || permission.includes("approve")) ? (
                 <Button
                         onClick = { () => {
                           if (message === "") {

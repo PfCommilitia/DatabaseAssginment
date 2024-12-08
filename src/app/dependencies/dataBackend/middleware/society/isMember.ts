@@ -10,7 +10,7 @@ import getUserPermission
   from "@/app/dependencies/dataBackend/middleware/user/getPermission";
 import { ERROR_USER_NOT_PERMITTED } from "@/app/dependencies/error/databaseTrigger";
 
-export default async function getIsSocietyMember(uuid: string, username: string | null) {
+export default async function getIsSocietyMember(uuid: number, username: string | null) {
   const session = await getServerSession();
   if (!session) {
     throw ERROR_SESSION_NOT_FOUND;

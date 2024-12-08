@@ -15,17 +15,17 @@ import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 
 export default function ApplyForEventDialog({ row, option, handleCloseAction }: {
-  row: string | null,
+  row: number | null,
   option: string | null,
   handleCloseAction: () => void
 }) {
-  const [ uuid, setUuid ] = useState<string>("");
-  const [ society, setSociety ] = useState<string>("");
-  const [ startTime, setStartTime ] = useState<Date>(new Date());
-  const [ endTime, setEndTime ] = useState<Date>(new Date());
+  const [ uuid, setUuid ] = useState<number>(0);
+  const [ society, setSociety ] = useState<number>(0);
+  const [ startTime, setStartTime ] = useState<string>("");
+  const [ endTime, setEndTime ] = useState<string>("");
   const [ title, setTitle ] = useState<string>("");
   const [ description, setDescription ] = useState<string>("");
-  const [ capacity, setCapacity ] = useState<string>("");
+  const [ capacity, setCapacity ] = useState<string>("-1");
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -58,7 +58,7 @@ export default function ApplyForEventDialog({ row, option, handleCloseAction }: 
                       type = "text"
                       fullWidth
                       variant = "standard"
-                      value = { uuid }
+                      value = { uuid.toString() }
                       disabled
               ></TextField>
               <TextField
@@ -68,7 +68,14 @@ export default function ApplyForEventDialog({ row, option, handleCloseAction }: 
                       fullWidth
                       variant = "standard"
                       value = { society }
-                      onChange = { (e) => setSociety(e.target.value) }
+                      onChange = { (e) => {
+                        if (isNaN(parseInt(e.target.value))) {
+                          e.target.value = "";
+                        }
+                        if (e.target.value.length) {
+                          setSociety(parseInt(e.target.value));
+                        }
+                      } }
               ></TextField>
               <TextField
                       margin = "dense"
@@ -95,7 +102,9 @@ export default function ApplyForEventDialog({ row, option, handleCloseAction }: 
                       fullWidth
                       variant = "standard"
                       value = { capacity }
-                      disabled
+                      onChange = { (e) => {
+                        setCapacity(e.target.value);
+                      } }
               ></TextField>
               <TextField
                       margin = "dense"
@@ -103,8 +112,8 @@ export default function ApplyForEventDialog({ row, option, handleCloseAction }: 
                       type = "datetime-local"
                       fullWidth
                       variant = "standard"
-                      value = { startTime.toISOString().split(".")[0] }
-                      onChange = { (e) => setStartTime(new Date(e.target.value)) }
+                      value = { startTime }
+                      onChange = { (e) => setStartTime(e.target.value) }
               >
               </TextField>
               <TextField
@@ -113,8 +122,8 @@ export default function ApplyForEventDialog({ row, option, handleCloseAction }: 
                       type = "datetime-local"
                       fullWidth
                       variant = "standard"
-                      value = { endTime.toISOString().split(".")[0] }
-                      onChange = { (e) => setEndTime(new Date(e.target.value)) }
+                      value = { endTime }
+                      onChange = { (e) => setEndTime(e.target.value) }
               >
               </TextField>
             </DialogContent>
@@ -130,31 +139,31 @@ export default function ApplyForEventDialog({ row, option, handleCloseAction }: 
               <Button
                       variant = "contained"
                       onClick = { () => {
-                        if (!society || !uuid || !startTime || !endTime || !title || !description || !capacity) {
+                        if (!startTime || !endTime || !title || !description) {
                           alert("所有字段不能为空");
-                          return;
-                        }
-                        if (isNaN(parseInt(capacity))) {
-                          alert("容量必须是数字");
-                          return;
-                        }
-                        if (parseInt(capacity) <= 0) {
-                          alert("容量必须大于0");
                           return;
                         }
                         if (startTime >= endTime) {
                           alert("开始时间必须早于结束时间");
                           return;
                         }
-                        if (endTime.getTime() - startTime.getTime() > 4 * 60 * 60 * 1000) {
+                        if (isNaN(parseInt(capacity))) {
+                          alert("容量必须是一个整数");
+                          return;
+                        }
+                        if (parseInt(capacity) <= 0 && parseInt(capacity) !== -1) {
+                          alert("容量必须大于0");
+                          return;
+                        }
+                        if ((new Date(endTime)).getTime() - (new Date(startTime)).getTime() > 4 * 60 * 60 * 1000) {
                           alert("活动持续时间不能超过4小时");
                           return;
                         }
-                        if (startTime.getTime() - new Date().getTime() < 12 * 60 * 60 * 1000) {
+                        if ((new Date(startTime)).getTime() - (new Date()).getTime() < 12 * 60 * 60 * 1000) {
                           alert("开始时间必须晚于当前时间12小时");
                           return;
                         }
-                        if (startTime.getTime() - new Date().getTime() > 7 * 24 * 60 * 60 * 1000) {
+                        if ((new Date(startTime)).getTime() - (new Date()).getTime() > 7 * 24 * 60 * 60 * 1000) {
                           alert("开始时间必须早于当前时间的7天后");
                           return;
                         }
@@ -163,7 +172,7 @@ export default function ApplyForEventDialog({ row, option, handleCloseAction }: 
                           body: JSON.stringify({
                             uuid: society,
                             venue: uuid,
-                            timeRange: [ startTime.toString(), endTime.toString() ],
+                            timeRange: [ startTime, endTime ],
                             title,
                             description,
                             capacity: parseInt(capacity)

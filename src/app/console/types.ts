@@ -14,7 +14,7 @@ export interface ConsoleState {
     set: (newTab: Tab | null) => void;
   },
   filter: {
-    get: () => Record<string, string[]>;
-    set: (newFilter: Record<string, string[]>) => void;
+    get: () => Record<string, string[] | number[]>;
+    set: (newFilter: Record<string, string[] | number[]>) => void;
   }
 }

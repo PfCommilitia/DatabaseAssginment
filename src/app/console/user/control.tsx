@@ -16,6 +16,10 @@ export default function UserControl(
 
   return (
           <Box
+                  display = "grid"
+                  gridTemplateColumns = "1fr 1fr"
+                  gridTemplateRows = "45% 45%"
+                  gap = "1em"
                   sx = { {
                     width: "100%",
                     height: "100%"
@@ -57,11 +61,19 @@ export default function UserControl(
             <Button
                     variant = "contained"
                     onClick = { () => {
+                      if (
+                              organisationId.split(",").filter(str => str.length).some(str => isNaN(parseInt(str.trim()))) ||
+                              societyId.split(",").filter(str => str.length).some(str => isNaN(parseInt(str.trim()))) ||
+                              eventId.split(",").filter(str => str.length).some(str => isNaN(parseInt(str.trim())
+                              ))) {
+                        alert("Id必须为数字");
+                        return;
+                      }
                       consoleState.filter.set({
                         page: [ "user" ],
-                        organisationId: organisationId.split(",").map(str => str.trim()),
-                        societyId: societyId.split(",").map(str => str.trim()),
-                        eventId: eventId.split(",").map(str => str.trim())
+                        organisationId: organisationId.split(",").filter(str => str.length).map(str => parseInt(str.trim())),
+                        societyId: societyId.split(",").filter(str => str.length).map(str => parseInt(str.trim())),
+                        eventId: eventId.split(",").filter(str => str.length).map(str => parseInt(str.trim()))
                       });
                       dispatch(setFetching(true));
                     } }

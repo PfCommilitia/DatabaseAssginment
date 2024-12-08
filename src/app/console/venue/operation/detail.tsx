@@ -11,11 +11,11 @@ import {
 } from "@mui/material";
 
 export default function ViewVenueDialog({ row, option, handleCloseAction }: {
-  row: string | null,
+  row: number | null,
   option: string | null,
   handleCloseAction: () => void
 }) {
-  const [ uuid, setUuid ] = useState<string>("");
+  const [ uuid, setUuid ] = useState<number>(0);
   const [ name, setName ] = useState<string>("");
   const [ address, setAddress ] = useState<string>("");
   const [ description, setDescription ] = useState<string>("");
@@ -57,7 +57,7 @@ export default function ViewVenueDialog({ row, option, handleCloseAction }: {
                       type = "text"
                       fullWidth
                       variant = "standard"
-                      value = { uuid }
+                      value = { uuid.toString() }
                       disabled
               ></TextField>
               <TextField

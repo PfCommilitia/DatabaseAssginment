@@ -9,8 +9,8 @@ import {
 import { ERROR_USER_NOT_PERMITTED } from "@/app/dependencies/error/databaseTrigger";
 
 export default async function migrateSociety(
-  society: string,
-  organisation: string
+  society: number,
+  organisation: number
 ):
   Promise<number | null> {
   const session = await getServerSession();

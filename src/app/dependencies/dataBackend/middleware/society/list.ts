@@ -11,7 +11,7 @@ import getUserPermission
 import { ERROR_USER_NOT_PERMITTED } from "@/app/dependencies/error/databaseTrigger";
 
 export type Society = [
-  string, // uuid
+  number, // uuid
   string, // name
   string, // organisation
   boolean, // isActive
@@ -23,13 +23,13 @@ export type Society = [
 export default async function listSocieties(
   filterActive: boolean | null,
   filterRepresentatives: string[] | null,
-  filterOrganisations: string[] | null,
-  filterOrganisationHierarchy: string[] | null,
+  filterOrganisations: number[] | null,
+  filterOrganisationHierarchy: number[] | null,
   filterManaged: boolean | null,
-  filterMember: string | null
+  filterMember: string[] | null
 ): Promise<Society[]> {
   const conditions = [];
-  const params: (string | string[] | boolean)[] = [];
+  const params: (string | string[] | number[] | boolean)[] = [];
   if (filterActive !== null) {
     conditions.push(`s.IsActive = $${ params.length + 1 }`);
     params.push(filterActive);
@@ -99,7 +99,7 @@ export default async function listSocieties(
     conditions.push(`EXISTS (
       SELECT 1
       FROM "Society".Membership m
-      WHERE m.Society = s.Uuid AND m.Individual = $${ params.length + 1 }
+      WHERE m.Society = s.Uuid AND m.Individual = ANY($${ params.length + 1 }) AND IsActive
     )`);
     params.push(filterMember);
   }

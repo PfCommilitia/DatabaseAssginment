@@ -14,6 +14,10 @@ export default function OrganisationControl(
 
   return (
           <Box
+                  display = "grid"
+                  gridTemplateColumns = "1fr"
+                  gridTemplateRows = "45% 45%"
+                  gap = "1em"
                   sx = { {
                     width: "100%",
                     height: "100%"
@@ -33,9 +37,13 @@ export default function OrganisationControl(
             <Button
                     variant = "contained"
                     onClick = { () => {
+                      if (organisationId.split(",").filter(str => str.length).some(str => !str.trim())) {
+                        alert("组织Id不能为空");
+                        return;
+                      }
                       consoleState.filter.set({
                         page: [ "organisation" ],
-                        organisationId: organisationId.split(",").map(str => str.trim())
+                        organisationId: organisationId.split(",").filter(str => str.length).map(str => str.trim())
                       });
                       dispatch(setFetching(true));
                     } }

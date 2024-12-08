@@ -2,15 +2,14 @@ import { connect } from "@/app/dependencies/dataBackend/dataSource";
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import processDBError from "@/app/dependencies/error/database";
 import { getServerSession } from "next-auth";
-import { uuidv7 } from "uuidv7";
 import {
   ERROR_NO_USER_IN_SESSION,
   ERROR_SESSION_NOT_FOUND
 } from "@/app/dependencies/error/session";
 
 export default async function placeEventParticipationApplication(
-  applyingEvent: string,
-): Promise<string | null> {
+  applyingEvent: number,
+): Promise<number | null> {
   const session = await getServerSession();
   if (!session) {
     throw ERROR_SESSION_NOT_FOUND;
@@ -20,21 +19,21 @@ export default async function placeEventParticipationApplication(
   }
   const client = await connect();
   try {
-    const uuid = uuidv7();
     const result = await client.query(
       `INSERT INTO "Society".EventParticipationApplication
-         (Uuid, Applicant, ApplyingEvent)
-       VALUES ($1, $2, $3)`,
-      [ uuid, session.user.name, applyingEvent ]
+         (Applicant, ApplyingEvent)
+       VALUES ($1, $2)`,
+      [ session.user.name, applyingEvent ]
     );
     if (!result.rowCount) {
       return null;
     }
-    return uuid;
+    return result.rowCount;
   } catch (e) {
     if (!(e instanceof Error)) {
       throw ERROR_UNKNOWN;
     }
+    console.log(e);
     e = processDBError(e);
     throw e;
   } finally {

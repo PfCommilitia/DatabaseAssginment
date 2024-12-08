@@ -19,6 +19,10 @@ export default function EventApplicationControl(
 
   return (
           <Box
+                  display = "grid"
+                  gridTemplateColumns = "1fr 1fr 1fr 1fr"
+                  gridTemplateRows = "45% 45%"
+                  gap = "1em"
                   sx = { {
                     width: "100%",
                     height: "100%"
@@ -57,7 +61,10 @@ export default function EventApplicationControl(
                       setEndTime(new Date(event.target.value).toString());
                     } }
             ></TextField>
-            <Box>
+            <Box
+                    display = "flex"
+                    alignItems = "center"
+            >
               <Checkbox
                       checked = { status.includes("approved") }
                       onChange = { (event) => {
@@ -71,7 +78,10 @@ export default function EventApplicationControl(
               </Checkbox>
               <Typography>已通过</Typography>
             </Box>
-            <Box>
+            <Box
+                    display = "flex"
+                    alignItems = "center"
+            >
               <Checkbox
                       checked = { status.includes("rejected") }
                       onChange = { (event) => {
@@ -85,7 +95,10 @@ export default function EventApplicationControl(
               </Checkbox>
               <Typography>已拒绝</Typography>
             </Box>
-            <Box>
+            <Box
+                    display = "flex"
+                    alignItems = "center"
+            >
               <Checkbox
                       checked = { status.includes("pending") }
                       onChange = { (event) => {
@@ -99,7 +112,10 @@ export default function EventApplicationControl(
               </Checkbox>
               <Typography>待审核</Typography>
             </Box>
-            <Box>
+            <Box
+                    display = "flex"
+                    alignItems = "center"
+            >
               <Checkbox
                       checked = { filterActive }
                       onChange = { (event) => {
@@ -112,9 +128,13 @@ export default function EventApplicationControl(
             <Button
                     variant = "contained"
                     onClick = { () => {
+                      if (societyId.split(",").filter(str => str.length).some((s) => isNaN(parseInt(s.trim())))) {
+                        alert("社团Id必须为数字");
+                        return;
+                      }
                       consoleState.filter.set({
                         page: [ "eventApplication" ],
-                        societyId: societyId.split(",").map((s) => s.trim()),
+                        societyId: societyId.split(",").filter(str => str.length).map((s) => parseInt(s.trim())),
                         timeRange: startTime && endTime ? [ startTime, endTime ] : [],
                         status,
                         active: filterActive ? [ "" ] : []

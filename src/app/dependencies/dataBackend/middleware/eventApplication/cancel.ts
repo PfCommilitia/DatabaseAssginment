@@ -7,7 +7,7 @@ import {
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import processDBError from "@/app/dependencies/error/database";
 
-export default async function cancelEventApplication(uuid: string): Promise<number | null> {
+export default async function cancelEventApplication(uuid: number): Promise<number | null> {
   const session = await getServerSession();
   if (!session) {
     throw ERROR_SESSION_NOT_FOUND;

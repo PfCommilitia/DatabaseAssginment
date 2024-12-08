@@ -17,13 +17,13 @@ import {
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import { setFetching } from "@/app/dependencies/redux/stateSlices/session";
 
-function approveEventApplication(router: AppRouterInstance, onSuccess: () => void, uuid: string, message: string, result: boolean) {
+function approveEventApplication(router: AppRouterInstance, onSuccess: () => void, uuid: number, message: string, result: boolean) {
   fetch("/api/console/eventApplication/approve", {
     method: "POST",
     body: JSON.stringify({
       uuid,
       result,
-      comment: message,
+      comment: message
     })
   }).then(
           res => {
@@ -48,11 +48,11 @@ function approveEventApplication(router: AppRouterInstance, onSuccess: () => voi
 }
 
 export default function ViewEventApplicationDialog({ row, option, handleCloseAction }: {
-  row: string | null,
+  row: number | null,
   option: string | null,
   handleCloseAction: () => void
 }) {
-  const [ uuid, setUuid ] = useState<string>("");
+  const [ uuid, setUuid ] = useState<number>(0);
   const [ applicant, setApplicant ] = useState<string>("");
   const [ society, setSociety ] = useState<string>("");
   const [ venue, setVenue ] = useState<string>("");
@@ -72,7 +72,7 @@ export default function ViewEventApplicationDialog({ row, option, handleCloseAct
     async function fetchData() {
       const response = await fetch("/api/console/eventApplication/acquireState", {
         method: "POST",
-        body: JSON.stringify({ application: row })
+        body: JSON.stringify({ eventApplication: row })
       });
       const data = (await response.json()).payload;
       setUuid(data[0]);
@@ -121,7 +121,7 @@ export default function ViewEventApplicationDialog({ row, option, handleCloseAct
               type = "text"
               fullWidth
               variant = "standard"
-              value = { uuid }
+              value = { uuid.toString() }
               disabled
       ></TextField>
       <TextField
@@ -223,6 +223,7 @@ export default function ViewEventApplicationDialog({ row, option, handleCloseAct
                         fullWidth
                         variant = "standard"
                         value = { message }
+                        disabled = { status !== "待审核" }
                         onChange = { (e) => setMessage(e.target.value) }
                 ></TextField>
         ) : null
@@ -230,7 +231,8 @@ export default function ViewEventApplicationDialog({ row, option, handleCloseAct
     </DialogContent>
     <DialogActions>
       {
-        permission.includes("admin") || permission.includes("approve") ? (
+        status === "待审核" &&
+        (permission.includes("admin") || permission.includes("approve")) ? (
                 <Button
                         onClick = { () => {
                           if (!message) {
@@ -248,7 +250,8 @@ export default function ViewEventApplicationDialog({ row, option, handleCloseAct
         ) : null
       }
       {
-        permission.includes("admin") || permission.includes("approve") ? (
+        status === "待审核" &&
+        (permission.includes("admin") || permission.includes("approve")) ? (
                 <Button
                         onClick = { () => {
                           if (message === "") {

@@ -8,7 +8,7 @@ import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import processDBError from "@/app/dependencies/error/database";
 
 export default async function ApproveEventApplication(
-  uuid: string,
+  uuid: number,
   result: boolean,
   comment: string,
 ): Promise<number | null> {

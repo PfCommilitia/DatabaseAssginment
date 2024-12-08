@@ -16,6 +16,10 @@ export default function SocietyControl(
 
   return (
           <Box
+                  display = "grid"
+                  gridTemplateColumns = "1fr 1fr"
+                  gridTemplateRows = "45% 45%"
+                  gap = "1em"
                   sx = { {
                     width: "100%",
                     height: "100%"
@@ -46,12 +50,19 @@ export default function SocietyControl(
             <Button
                     variant = "contained"
                     onClick = { () => {
+                      if (organisationId.split(",").filter(str => str.length).some(str => isNaN(parseInt(str.trim())))) {
+                        alert("组织Id必须为数字");
+                        return;
+                      }
                       consoleState.filter.set({
                         page: [ "society" ],
-                        organisationId: organisationId.split(",").map(str => str.trim()),
-                        member: member.split(",").map(str => str.trim())
+                        organisationId: organisationId.split(",").filter(str => str.length).map(str => str.trim()),
+                        member: member.split(",").filter(str => str.length).map(str => str.trim())
                       });
                       dispatch(setFetching(true));
+                    } }
+                    sx = { {
+                      gridColumn: "span 2"
                     } }
             >
               <Typography>筛选</Typography>
