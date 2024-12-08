@@ -5,8 +5,8 @@ import approveEventParticipationApplication from "@/app/dependencies/dataBackend
 
 export async function POST(request: Request) {
   try {
-    const { uuid, result, comment, timestamp } = await request.json();
-    const result0 = await approveEventParticipationApplication(uuid, result, comment, timestamp);
+    const { uuid, result, comment } = await request.json();
+    const result0 = await approveEventParticipationApplication(uuid, result, comment);
     if (!result0) {
       return NextResponse.json({ error: ERROR_UNKNOWN.code }, { status: 404 });
     }

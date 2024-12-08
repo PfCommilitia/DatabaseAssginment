@@ -10,7 +10,6 @@ import {
 
 export default async function placeEventParticipationApplication(
   applyingEvent: string,
-  timeStamp: string
 ): Promise<string | null> {
   const session = await getServerSession();
   if (!session) {
@@ -24,9 +23,9 @@ export default async function placeEventParticipationApplication(
     const uuid = uuidv7();
     const result = await client.query(
       `INSERT INTO "Society".EventParticipationApplication
-         (Uuid, Applicant, ApplyingEvent, TimeStamp)
-       VALUES ($1, $2, $3, $4)`,
-      [ uuid, session.user.name, applyingEvent, new Date(timeStamp) ]
+         (Uuid, Applicant, ApplyingEvent)
+       VALUES ($1, $2, $3)`,
+      [ uuid, session.user.name, applyingEvent ]
     );
     if (!result.rowCount) {
       return null;

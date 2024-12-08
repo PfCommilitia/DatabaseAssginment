@@ -6,6 +6,9 @@ import {
 } from "@/app/dependencies/error/session";
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import processDBError from "@/app/dependencies/error/database";
+import getEventApplicationPermission
+  from "@/app/dependencies/dataBackend/middleware/eventApplication/getPermission";
+import { ERROR_USER_NOT_PERMITTED } from "@/app/dependencies/error/databaseTrigger";
 
 export type User = [
   string, // username
@@ -19,7 +22,8 @@ export default async function listUser(
   filterOrganisation: string[] | null,
   filterOrganisationHierarchy: string[] | null,
   filterSocieties: string[] | null,
-  filterActive: boolean | null
+  filterActive: boolean | null,
+  filterEvents: string[] | null
 ) {
   const session = await getServerSession();
   if (!session) {
@@ -71,7 +75,7 @@ export default async function listUser(
     `);
     params.push(filterOrganisationHierarchy);
   }
-  if (filterSocieties) {
+  if (filterSocieties?.length) {
     conditions.push(`
       EXISTS (
         SELECT 1
@@ -80,6 +84,28 @@ export default async function listUser(
       )`
     );
     params.push(filterSocieties);
+  }
+  if (filterEvents?.length) {
+    for (const event of filterEvents) {
+      const permission = await getEventApplicationPermission(event);
+      if (permission === null) {
+        throw ERROR_USER_NOT_PERMITTED;
+      }
+    }
+    conditions.push(`
+          EXISTS (
+                SELECT 1
+                FROM "Society".EventApplication ea0
+                JOIN "Society".EventParticipationApplication epa0
+                ON ea0.Uuid = epa0.ApplyingEvent
+                WHERE ea0.Applicant = i.Username AND ea0.Uuid = ANY($${ params.length + 1 })
+                  AND EXISTS (
+                    SELECT 1 FROM "Society".EventParticipationApproval epa1
+                    WHERE epa1.Application = epa0.Uuid AND Result
+                  )
+          )`
+    );
+    params.push(filterEvents);
   }
   if (filterActive !== null) {
     conditions.push(`i.IsActive = $${ params.length + 1 }`);

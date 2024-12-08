@@ -12,6 +12,7 @@ export type Organisation = [
   string, // name
   string, // Representative.Name
   string, // Parent.Name
+  boolean, // IsActive
 ];
 
 export default async function listOrganisations(
@@ -106,7 +107,8 @@ export default async function listOrganisations(
   const query = `SELECT o.Uuid,
                         o.Name,
                         i.Name AS Representative,
-                        p.Name AS Parent
+                        p.Name AS Parent,
+                        o.IsActive
                  FROM "Society".Organisation o
                         LEFT OUTER JOIN "Society".Individual i
                                   ON o.Representative = i.Username
@@ -120,10 +122,11 @@ export default async function listOrganisations(
       return [];
     }
     return result.rows.map(row => [
-      row.Uuid,
-      row.Name,
-      row.Representative,
-      row.Parent
+      row.uuid,
+      row.name,
+      row.representative,
+      row.parent,
+      row.isactive
     ]) as Organisation[];
   } catch (e) {
     if (!(e instanceof Error)) {

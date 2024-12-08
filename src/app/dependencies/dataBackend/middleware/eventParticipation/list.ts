@@ -10,6 +10,7 @@ import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 
 export type EventParticipationApplication = [
   string, // uuid
+  string, // target
   string, // applicant
   string, // society
   string, // venue
@@ -250,6 +251,7 @@ export default async function listEventParticipationApplications(
   }
   const query = `
     SELECT epa.Uuid,
+           epa.ApplyingEvent,
            epa.Applicant,
            s.Name        AS Society,
            v.Name        AS Venue,
@@ -281,6 +283,7 @@ export default async function listEventParticipationApplications(
       row => {
         const result = [];
         result.push(row.uuid);
+        result.push(row.applyingevent);
         result.push(row.applicant);
         result.push(row.society);
         result.push(row.venue);

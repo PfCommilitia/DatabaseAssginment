@@ -8,11 +8,43 @@ import TopBar from "@/app/dependencies/sharedComponents/topBar";
 import { useInitSession } from "@/app/dependencies/lib/initSession";
 import { Tab, ConsoleState } from "@/app/console/types";
 import { useState } from "react";
-import { ListSocietiesView } from "@/app/console/components/listSocietiesView";
+import UserView from "@/app/console/user/view";
+import UserControl from "@/app/console/user/control";
+import SocietyView from "@/app/console/society/view";
+import SocietyControl from "@/app/console/society/control";
+import OrganisationView from "@/app/console/organisation/view";
+import OrganisationControl from "@/app/console/organisation/control";
+import VenueView from "@/app/console/venue/view";
+import VenueControl from "@/app/console/venue/control";
+import EventApplicationView from "@/app/console/eventApplication/view";
+import EventApplicationControl from "@/app/console/eventApplication/control";
+import EventParticipationView from "@/app/console/eventParticipation/view";
+import EventParticipationControl from "@/app/console/eventParticipation/control";
 
 function ConsoleMainView({ consoleState }: { consoleState: ConsoleState }): JSX.Element {
+  if (consoleState.tab.get() === Tab.User) {
+    return (<UserView
+            consoleState = { consoleState }></UserView>);
+  }
+  if (consoleState.tab.get() === Tab.Organisation) {
+    return (<OrganisationView
+            consoleState = { consoleState }></OrganisationView>);
+  }
   if (consoleState.tab.get() === Tab.Society) {
-    return (<ListSocietiesView consoleState = { consoleState }></ListSocietiesView>);
+    return (<SocietyView
+            consoleState = { consoleState }></SocietyView>);
+  }
+  if (consoleState.tab.get() === Tab.Venue) {
+    return (<VenueView
+            consoleState = { consoleState }></VenueView>);
+  }
+  if (consoleState.tab.get() === Tab.EventApplication) {
+    return (<EventApplicationView
+            consoleState = { consoleState }></EventApplicationView>);
+  }
+  if (consoleState.tab.get() === Tab.EventParticipation) {
+    return (<EventParticipationView
+            consoleState = { consoleState }></EventParticipationView>);
   }
   return (<></>);
 }
@@ -21,6 +53,30 @@ function ConsoleMainView({ consoleState }: { consoleState: ConsoleState }): JSX.
 function ConsoleHorizontalControl({ consoleState }: {
   consoleState: ConsoleState
 }): JSX.Element {
+  if (consoleState.tab.get() === Tab.User) {
+    return (<UserControl
+            consoleState = { consoleState }></UserControl>);
+  }
+  if (consoleState.tab.get() === Tab.Organisation) {
+    return (<OrganisationControl
+            consoleState = { consoleState }></OrganisationControl>);
+  }
+  if (consoleState.tab.get() === Tab.Society) {
+    return (<SocietyControl
+            consoleState = { consoleState }></SocietyControl>);
+  }
+  if (consoleState.tab.get() === Tab.Venue) {
+    return (<VenueControl
+            consoleState = { consoleState }></VenueControl>);
+  }
+  if (consoleState.tab.get() === Tab.EventApplication) {
+    return (<EventApplicationControl
+            consoleState = { consoleState }></EventApplicationControl>);
+  }
+  if (consoleState.tab.get() === Tab.EventParticipation) {
+    return (<EventParticipationControl
+            consoleState = { consoleState }></EventParticipationControl>);
+  }
   return (<></>);
 }
 
@@ -28,6 +84,7 @@ function ConsoleHorizontalControl({ consoleState }: {
 function ConsoleSidebar({ consoleState }: { consoleState: ConsoleState }): JSX.Element {
   function handleSetTab(newTab: Tab) {
     consoleState.tab.set(newTab);
+    consoleState.filter.set({});
   }
 
   return (<Box
@@ -64,12 +121,6 @@ function ConsoleSidebar({ consoleState }: { consoleState: ConsoleState }): JSX.E
       <Typography>场地</Typography>
     </Button>
     <Button
-            variant = { consoleState.tab.get() === Tab.SocietyApplication ? "contained" : "outlined" }
-            onClick = { () => handleSetTab(Tab.SocietyApplication) }
-    >
-      <Typography>社团申请</Typography>
-    </Button>
-    <Button
             variant = { consoleState.tab.get() === Tab.EventApplication ? "contained" : "outlined" }
             onClick = { () => handleSetTab(Tab.EventApplication) }
     >
@@ -86,10 +137,15 @@ function ConsoleSidebar({ consoleState }: { consoleState: ConsoleState }): JSX.E
 
 function ConsolePage(): JSX.Element {
   const [ tab, setTab ] = useState<Tab | null>(null);
+  const [ filter, setFilter ] = useState<Record<string, string[]>>({});
   const consoleState: ConsoleState = {
     tab: {
       get: () => tab,
       set: (newTab: Tab | null) => setTab(newTab)
+    },
+    filter: {
+      get: () => filter,
+      set: (newFilter: Record<string, string[]>) => setFilter(newFilter)
     }
   };
 
@@ -99,7 +155,7 @@ function ConsolePage(): JSX.Element {
                     alignItems: "center",
                     justifyItems: "center",
                     width: "100vw",
-                    height: "100vh",
+                    height: "100vh"
                   } }
           >
             <TopBar></TopBar>
@@ -107,13 +163,13 @@ function ConsolePage(): JSX.Element {
                     sx = { {
                       display: "flex",
                       width: "100%",
-                      height: "90%",
+                      height: "90%"
                     } }
             >
               <Box
                       sx = { {
                         width: "10%",
-                        height: "100%",
+                        height: "100%"
                       } }
               >
                 <ConsoleSidebar consoleState = { consoleState }></ConsoleSidebar>
@@ -123,13 +179,13 @@ function ConsolePage(): JSX.Element {
                         display: "flex",
                         flexDirection: "column",
                         width: "90%",
-                        height: "100%",
+                        height: "100%"
                       } }
               >
                 <Box
                         sx = { {
                           width: "100%",
-                          height: "15%",
+                          height: "15%"
                         } }
                 >
                   <ConsoleHorizontalControl

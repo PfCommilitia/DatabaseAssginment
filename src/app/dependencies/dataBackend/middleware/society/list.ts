@@ -6,6 +6,9 @@ import {
 } from "@/app/dependencies/error/session";
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import processDBError from "@/app/dependencies/error/database";
+import getUserPermission
+  from "@/app/dependencies/dataBackend/middleware/user/getPermission";
+import { ERROR_USER_NOT_PERMITTED } from "@/app/dependencies/error/databaseTrigger";
 
 export type Society = [
   string, // uuid
@@ -22,7 +25,8 @@ export default async function listSocieties(
   filterRepresentatives: string[] | null,
   filterOrganisations: string[] | null,
   filterOrganisationHierarchy: string[] | null,
-  filterManaged: boolean | null
+  filterManaged: boolean | null,
+  filterMember: string | null
 ): Promise<Society[]> {
   const conditions = [];
   const params: (string | string[] | boolean)[] = [];
@@ -84,6 +88,20 @@ export default async function listSocieties(
       throw ERROR_NO_USER_IN_SESSION;
     }
     params.push(session.user.name);
+  }
+  if (filterMember) {
+    for (const user of filterMember) {
+      const permission = await getUserPermission(user);
+      if (permission === null) {
+        throw ERROR_USER_NOT_PERMITTED;
+      }
+    }
+    conditions.push(`EXISTS (
+      SELECT 1
+      FROM "Society".Membership m
+      WHERE m.Society = s.Uuid AND m.Individual = $${ params.length + 1 }
+    )`);
+    params.push(filterMember);
   }
   const query = `SELECT s.Uuid,
                         s.Name,

@@ -62,6 +62,7 @@ export default async function acquireEventParticipationState(eventParticipation:
 
     const result = await client.query(
       `SELECT epa.Uuid,
+              epa.ApplyingEvent,
               epa.Applicant,
               s.Name        AS Society,
               v.Name        AS Venue,
@@ -91,6 +92,7 @@ export default async function acquireEventParticipationState(eventParticipation:
     const row = result.rows[0];
     const toReturn = [];
     toReturn.push(row.uuid);
+    toReturn.push(row.applyingevent);
     toReturn.push(row.applicant);
     toReturn.push(row.society);
     toReturn.push(row.venue);

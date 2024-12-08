@@ -9,13 +9,15 @@ export async function POST(request: Request) {
       filterOrganisations,
       filterOrganisationHierarchy,
       filterSocieties,
-      filterActive
+      filterActive,
+      filterEvents
     } = await request.json();
     const result = await listUser(
       filterOrganisations,
       filterOrganisationHierarchy,
       filterSocieties,
-      filterActive
+      filterActive,
+      filterEvents
     );
     return NextResponse.json({ payload: result }, { status: 200 });
   } catch (e) {

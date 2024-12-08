@@ -10,14 +10,16 @@ export async function POST(request: Request) {
       filterRepresentatives,
       filterOrganisations,
       filterOrganisationHierarchy,
-      filterManaged
+      filterManaged,
+      filterMember
     } = await request.json();
     const result = await listSocieties(
       filterActive,
       filterRepresentatives,
       filterOrganisations,
       filterOrganisationHierarchy,
-      filterManaged
+      filterManaged,
+      filterMember
     );
     return NextResponse.json({ payload: result }, { status: 200 });
   } catch (e) {

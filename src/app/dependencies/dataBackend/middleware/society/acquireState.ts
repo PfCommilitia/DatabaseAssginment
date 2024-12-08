@@ -27,13 +27,13 @@ export default async function acquireSocietyState(society: string) {
 
     const row = result.rows[0];
     return [
-      row.Uuid,
-      row.Name,
-      row.Organisation,
-      row.IsActive,
-      row.Representative,
-      row.ImageURL,
-      row.Description
+      row.uuid,
+      row.name,
+      row.organisation,
+      row.isactive,
+      row.representative,
+      row.imageurl,
+      row.description
     ] as Society;
   } catch (e) {
     if (!(e instanceof Error)) {

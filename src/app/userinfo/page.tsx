@@ -17,6 +17,10 @@ import FootBar from "@/app/dependencies/sharedComponents/footBar";
 import { useInitSession } from "@/app/dependencies/lib/initSession";
 import { useEffect, useState } from "react";
 import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
+import {
+  ERROR_NO_USER_IN_SESSION,
+  ERROR_SESSION_NOT_FOUND
+} from "@/app/dependencies/error/session";
 
 interface UserInfo {
   username: string;
@@ -32,18 +36,30 @@ function ChangePasswordDialog({ open, handleCloseAction }: {
   const [ passwordNew, setPasswordNew ] = useState("");
   const [ passwordConfirm, setPasswordConfirm ] = useState("");
   const [ passwordMismatch, setPasswordMismatch ] = useState(false);
+  const session = useSelector((state: RootState) => state.session.session);
   const router = useRouter();
 
   async function handleChangePassword() {
+    if (!session) {
+      router.push(`/error?error=${ encodeURIComponent(ERROR_SESSION_NOT_FOUND.code) }`);
+      return;
+    }
+    if (!session.user?.name) {
+      router.push(`/error?error=${ encodeURIComponent(ERROR_NO_USER_IN_SESSION.code) }`);
+      return;
+    }
     if (passwordNew !== passwordConfirm) {
       setPasswordMismatch(true);
+      return;
+    }
+    if (passwordNew === "") {
       return;
     }
     try {
       const validateLogin = await fetch("/api/user/changePassword", {
         method: "POST",
         body: JSON.stringify({
-          username: "admin",
+          username: session.user.name,
           password: password,
           passwordNew: passwordNew
         })

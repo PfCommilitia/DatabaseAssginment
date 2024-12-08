@@ -6,8 +6,8 @@ import placeEventParticipationApplication
 
 export async function POST(request: Request) {
   try {
-    const { applyingEvent, timeStamp } = await request.json();
-    const result = placeEventParticipationApplication(applyingEvent, timeStamp);
+    const { applyingEvent } = await request.json();
+    const result = placeEventParticipationApplication(applyingEvent);
     if (!result) {
       return NextResponse.json({ error: ERROR_UNKNOWN.code }, { status: 404 });
     }

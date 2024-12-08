@@ -11,7 +11,6 @@ export default async function ApproveEventApplication(
   uuid: string,
   result: boolean,
   comment: string,
-  timestamp: string
 ): Promise<number | null> {
   const session = await getServerSession();
   if (!session) {
@@ -22,11 +21,10 @@ export default async function ApproveEventApplication(
   }
   const client = await connect();
   try {
-    const time = new Date(timestamp);
     const result0 = await client.query(
-      `INSERT INTO "Society".EventParticipationApproval (Application, Approver, Result, Comment, Timestamp)
-       VALUES ($1, $2, $3, $4, $5)`,
-      [ uuid, session.user.name, result, comment, time ]
+      `INSERT INTO "Society".EventParticipationApproval (Application, Approver, Result, Comment)
+       VALUES ($1, $2, $3, $4)`,
+      [ uuid, session.user.name, result, comment ]
     );
     if (!result0.rowCount) {
       return null;
