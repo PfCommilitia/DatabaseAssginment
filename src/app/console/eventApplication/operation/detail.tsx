@@ -228,7 +228,7 @@ export default function ViewEventApplicationDialog({ row, option, handleCloseAct
                         fullWidth
                         variant = "standard"
                         value = { message }
-                        disabled = { status !== "待审核" }
+                        disabled = { status !== "待审核" || isActive !== "是" }
                         onChange = { (e) => setMessage(e.target.value) }
                 ></TextField>
         ) : null
@@ -236,7 +236,7 @@ export default function ViewEventApplicationDialog({ row, option, handleCloseAct
     </DialogContent>
     <DialogActions>
       {
-        status === "待审核" &&
+        status === "待审核" && isActive === "是" &&
         (permission.includes("admin") || permission.includes("approve")) ? (
                 <Button
                         onClick = { () => {
@@ -255,7 +255,7 @@ export default function ViewEventApplicationDialog({ row, option, handleCloseAct
         ) : null
       }
       {
-        status === "待审核" &&
+        status === "待审核" && isActive === "是" &&
         (permission.includes("admin") || permission.includes("approve")) ? (
                 <Button
                         onClick = { () => {

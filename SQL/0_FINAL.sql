@@ -12,7 +12,7 @@ CREATE TABLE Individual
   Username      CHAR(10) PRIMARY KEY,           -- 10位学工号
   Name          TEXT    NOT NULL,               -- 姓名
   IsActive      BOOLEAN NOT NULL DEFAULT TRUE,  -- 是否激活
-  IsInitialized BOOLEAN NOT NULL DEFAULT FALSE, -- 是否已初始化
+  IsInitialized BOOLEAN NOT NULL DEFAULT TRUE, -- 是否已初始化
   PasswordHash  TEXT    NOT NULL                -- 密码哈希
   -- Organisation INT REFERENCES Organisation (Uuid) NOT NULL DEFAULT 0
 );

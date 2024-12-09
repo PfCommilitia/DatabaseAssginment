@@ -173,7 +173,7 @@ export default function ViewEventParticipationDialog({ row, option, handleCloseA
                         fullWidth
                         variant = "standard"
                         value = { message }
-                        disabled = { status !== "待审核" }
+                        disabled = { status !== "待审核" || isActive !== "是" }
                         onChange = { (e) => setMessage(e.target.value) }
                 ></TextField>
         ) : null
@@ -181,7 +181,7 @@ export default function ViewEventParticipationDialog({ row, option, handleCloseA
     </DialogContent>
     <DialogActions>
       {
-        status === "待审核" &&
+        status === "待审核" && isActive === "是" &&
         (permission.includes("admin") || permission.includes("approve")) ? (
                 <Button
                         onClick = { () => {
@@ -200,7 +200,7 @@ export default function ViewEventParticipationDialog({ row, option, handleCloseA
         ) : null
       }
       {
-        status === "待审核" &&
+        status === "待审核" && isActive === "是" &&
         (permission.includes("admin") || permission.includes("approve")) ? (
                 <Button
                         onClick = { () => {
