@@ -31,6 +31,7 @@ type EventApplicationWithPermission = [
   boolean, // isActive
   number, // capacity
   string, // status
+  string, // message
   string[]
 ]
 
@@ -55,7 +56,7 @@ function EventApplicationRow(router: AppRouterInstance, onSuccess: () => void, i
   const isActive = item[7];
   const capacity = item[8];
   const status = item[9];
-  const permission = item[10];
+  const permission = item[11];
 
   return (<TableRow
           key = { uuid }

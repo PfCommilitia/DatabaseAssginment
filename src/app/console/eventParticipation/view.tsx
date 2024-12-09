@@ -33,7 +33,8 @@ type EventParticipationWithPermission = [
   boolean, // isActive
   string, // status
   string, // participationStatus
-  string[]
+          string | null, // message
+  string[] // permission
 ]
 
 interface EventParticipationRowProps {
@@ -52,7 +53,7 @@ function EventParticipationRow(router: AppRouterInstance, onSuccess: () => void,
   const applicant = item[2];
   const isActive = item[10];
   const status = item[12];
-  const permission = item[13];
+  const permission = item[14];
 
   return (<TableRow
           key = { uuid }

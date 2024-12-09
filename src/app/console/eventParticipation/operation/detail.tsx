@@ -77,6 +77,9 @@ export default function ViewEventParticipationDialog({ row, option, handleCloseA
         "rejected": "已拒绝",
         "pending": "待审核"
       }[data[12] as "approved" | "rejected" | "pending"]);
+      if (data[13]) {
+        setMessage(data[13]);
+      }
       const res1 = await fetch("/api/console/eventParticipation/getPermission", {
         method: "POST",
         body: JSON.stringify({ uuid: row })
@@ -161,6 +164,7 @@ export default function ViewEventParticipationDialog({ row, option, handleCloseA
               disabled
       ></TextField>
       {
+        message ||
         permission.includes("admin") || permission.includes("approve") ? (
                 <TextField
                         margin = "dense"

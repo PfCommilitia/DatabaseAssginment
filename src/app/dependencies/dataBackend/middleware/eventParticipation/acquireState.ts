@@ -73,7 +73,8 @@ export default async function acquireEventParticipationState(eventParticipation:
               ea.Description,
               epa.IsActive,
               eaa.Result    AS Status,
-              epaa.Result   AS ParticipationStatus
+              epaa.Result   AS ParticipationStatus,
+              epaa.Comment
        FROM "Society".EventParticipationApplication epa
               LEFT OUTER JOIN "Society".EventApplication ea ON epa.ApplyingEvent = ea.uuid
               LEFT OUTER JOIN "Society".Society s ON ea.Society = s.Uuid
@@ -108,6 +109,7 @@ export default async function acquireEventParticipationState(eventParticipation:
     toReturn.push(row.isactive);
     toReturn.push(row.status === null ? "pending" : (row.status ? "approved" : "rejected"));
     toReturn.push(row.participationstatus === null ? "pending" : (row.participationstatus ? "approved" : "rejected"));
+    toReturn.push(row.comment);
     return toReturn as EventParticipationApplication;
   } catch (e) {
     if (!(e instanceof Error)) {

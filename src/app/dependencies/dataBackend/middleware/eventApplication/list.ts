@@ -19,6 +19,7 @@ export type EventApplication = [
   boolean, // isActive
   number, // capacity
   string, // status
+    string | null, // message
 ];
 
 export default async function listEventApplication(
@@ -130,25 +131,26 @@ export default async function listEventApplication(
     params.push(filterActive);
   }
   const query = `SELECT ea.Uuid,
-                      i.Name AS Applicant,
-                      s.Name AS Society,
-                      v.Name AS Venue,
-                      TimeRange,
-                      Title,
-                      ea.Description,
-                      ea.IsActive,
-                      ea.Capacity,
-                      Result
-               FROM "Society".EventApplication ea
-                      LEFT OUTER JOIN "Society".EventApplicationApproval eaa
-                                      ON ea.Uuid = eaa.Application
-                      LEFT OUTER JOIN "Society".Individual i
-                                      ON ea.Applicant = i.Username
-                      LEFT OUTER JOIN "Society".Society s
-                                      ON ea.Society = s.Uuid
-                      LEFT OUTER JOIN "Society".Venue v
-                                      ON ea.Venue = v.Uuid
-               WHERE ${ conditions.length ? conditions.map(str => str.trim()).join(" AND ") : "TRUE" }`;
+                        i.Name AS Applicant,
+                        s.Name AS Society,
+                        v.Name AS Venue,
+                        TimeRange,
+                        Title,
+                        ea.Description,
+                        ea.IsActive,
+                        ea.Capacity,
+                        Result,
+                        Comment
+                 FROM "Society".EventApplication ea
+                        LEFT OUTER JOIN "Society".EventApplicationApproval eaa
+                                        ON ea.Uuid = eaa.Application
+                        LEFT OUTER JOIN "Society".Individual i
+                                        ON ea.Applicant = i.Username
+                        LEFT OUTER JOIN "Society".Society s
+                                        ON ea.Society = s.Uuid
+                        LEFT OUTER JOIN "Society".Venue v
+                                        ON ea.Venue = v.Uuid
+                 WHERE ${ conditions.length ? conditions.map(str => str.trim()).join(" AND ") : "TRUE" }`;
   const client = await connect();
   try {
     const result = await client.query(query, params);
@@ -172,6 +174,7 @@ export default async function listEventApplication(
         result.push(row.isactive);
         result.push(row.capacity);
         result.push(row.result === null ? "pending" : (row.result ? "approved" : "rejected"));
+        result.push(row.comment);
         return result as EventApplication;
       }
     );

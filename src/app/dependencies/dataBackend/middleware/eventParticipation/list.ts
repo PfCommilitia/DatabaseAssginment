@@ -22,6 +22,7 @@ export type EventParticipationApplication = [
   boolean, // isActive
   string, // status
   string, // participationStatus
+    string | null, // message
 ];
 
 export default async function listEventParticipationApplications(
@@ -259,7 +260,7 @@ export default async function listEventParticipationApplications(
   const query = `
     SELECT epa.Uuid,
            epa.ApplyingEvent,
-           epa.Applicant,
+           i.Name        AS Applicant,
            s.Name        AS Society,
            v.Name        AS Venue,
            ea.Applicant  AS Organiser,
@@ -269,8 +270,10 @@ export default async function listEventParticipationApplications(
            ea.Description,
            epa.IsActive,
            eaa.Result    AS Status,
-           epaa.Result   AS ParticipationStatus
+           epaa.Result   AS ParticipationStatus,
+           epaa.Comment
     FROM "Society".EventParticipationApplication epa
+           LEFT OUTER JOIN "Society".Individual i ON epa.Applicant = i.Username
            LEFT OUTER JOIN "Society".EventApplication ea ON epa.ApplyingEvent = ea.uuid
            LEFT OUTER JOIN "Society".Society s ON ea.Society = s.Uuid
            LEFT OUTER JOIN "Society".Venue v ON ea.Venue = v.Uuid
@@ -306,6 +309,7 @@ export default async function listEventParticipationApplications(
         result.push(row.isactive);
         result.push(row.status === null ? "pending" : (row.status ? "approved" : "rejected"));
         result.push(row.participationstatus === null ? "pending" : (row.participationstatus ? "approved" : "rejected"));
+        result.push(row.comment);
         return result;
       }
     ) as EventParticipationApplication[];

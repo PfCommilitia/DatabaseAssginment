@@ -87,6 +87,9 @@ export default function ViewEventApplicationDialog({ row, option, handleCloseAct
         "rejected": "已拒绝",
         "pending": "待审核"
       }[data[9] as "approved" | "rejected" | "pending"]);
+      if (data[10]) {
+        setMessage(data[10]);
+      }
       const res1 = await fetch("/api/console/eventApplication/getPermission", {
         method: "POST",
         body: JSON.stringify({ uuid: row })
@@ -216,6 +219,7 @@ export default function ViewEventApplicationDialog({ row, option, handleCloseAct
               disabled
       ></TextField>
       {
+        message ||
         permission.includes("admin") || permission.includes("approve") ? (
                 <TextField
                         margin = "dense"

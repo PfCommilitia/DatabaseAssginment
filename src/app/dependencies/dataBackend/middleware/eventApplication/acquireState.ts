@@ -68,7 +68,8 @@ export default async function acquireEventApplicationState(eventApplication: num
               ea.Description,
               ea.IsActive,
               ea.Capacity,
-              Result
+              Result,
+              Comment
        FROM "Society".EventApplication ea
               LEFT OUTER JOIN "Society".EventApplicationApproval eaa
                               ON Uuid = Application
@@ -101,6 +102,7 @@ export default async function acquireEventApplicationState(eventApplication: num
     toReturn.push(row.isactive);
     toReturn.push(row.capacity);
     toReturn.push(row.result === null ? "pending" : (row.result ? "approved" : "rejected"));
+    toReturn.push(row.comment);
     return toReturn as EventApplication;
   } catch (e) {
     if (!(e instanceof Error)) {
