@@ -18,6 +18,9 @@ export default async function getEventParticipationPermission(uuid: number): Pro
   const permissions = [];
   if (session.user.name === "0000000000") {
     permissions.push("admin");
+    if (!permissions.includes("approve")) {
+      permissions.push("approve");
+    }
   }
   const client = await connect();
   try {
@@ -44,6 +47,9 @@ export default async function getEventParticipationPermission(uuid: number): Pro
     `, [ uuid, session.user.name ]);
     if (result1.rowCount) {
       permissions.push("organisationOwner");
+      if (!permissions.includes("approve")) {
+        permissions.push("approve");
+      }
     }
     const result2 = await client.query(`
         SELECT 1
@@ -58,6 +64,9 @@ export default async function getEventParticipationPermission(uuid: number): Pro
       [ session.user.name, uuid ]);
     if (result2.rowCount) {
       permissions.push("societyOwner");
+      if (!permissions.includes("approve")) {
+        permissions.push("approve");
+      }
     }
     const result3 = await client.query(`
         SELECT 1
@@ -70,6 +79,9 @@ export default async function getEventParticipationPermission(uuid: number): Pro
       [ session.user.name, uuid ]);
     if (result3.rowCount) {
       permissions.push("eventApplicant");
+      if (!permissions.includes("approve")) {
+        permissions.push("approve");
+      }
     }
     const result4 = await client.query(`
         SELECT 1
