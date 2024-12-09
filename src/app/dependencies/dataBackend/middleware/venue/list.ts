@@ -110,7 +110,9 @@ export default async function listVenues(
                  FROM "Society".Venue v
                         LEFT OUTER JOIN "Society".Organisation o
                                         ON v.Organisation = o.Uuid
-                 WHERE ${ conditions.length ? conditions.map(str => str.trim()).join(" AND ") : "TRUE" }`;
+                 WHERE ${ conditions.length ? conditions.map(str => str.trim()).join(" AND ") : "TRUE" }
+                 ORDER BY v.Uuid
+  `;
   const client = await connect();
   try {
     const result = await client.query(query, params);

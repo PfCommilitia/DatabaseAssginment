@@ -283,6 +283,7 @@ export default async function listEventParticipationApplications(
            LEFT OUTER JOIN "Society".EventParticipationApproval epaa
                            ON epa.Uuid = epaa.Application
     WHERE ${ conditions ? conditions.map(str => str.trim()).join(" AND ") : "TRUE" }
+    ORDER BY epa.Uuid
   `;
   const client = await connect();
   try {

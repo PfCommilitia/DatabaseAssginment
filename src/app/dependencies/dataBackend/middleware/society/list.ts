@@ -114,7 +114,9 @@ export default async function listSocieties(
                         LEFT OUTER JOIN "Society".Organisation o ON s.Organisation = o.Uuid
                         LEFT OUTER JOIN "Society".Individual i
                                         ON s.Representative = i.Username
-                 WHERE ${ conditions.length ? conditions.map(str => str.trim()).join(" AND ") : "TRUE" }`;
+                 WHERE ${ conditions.length ? conditions.map(str => str.trim()).join(" AND ") : "TRUE" }
+                 ORDER BY s.Uuid
+  `;
   const client = await connect();
   try {
     const result = await client.query(query, params);

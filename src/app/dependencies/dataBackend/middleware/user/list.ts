@@ -146,6 +146,7 @@ export default async function listUser(
     FROM "Society".Individual i
            LEFT OUTER JOIN "Society".Organisation o ON i.Organisation = o.Uuid
     WHERE ${ conditions.length ? conditions.map(str => str.trim()).join(" AND ") : "TRUE" }
+    ORDER BY i.Username
   `;
   const client = await connect();
   try {

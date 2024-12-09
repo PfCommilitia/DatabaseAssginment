@@ -150,7 +150,9 @@ export default async function listEventApplication(
                                         ON ea.Society = s.Uuid
                         LEFT OUTER JOIN "Society".Venue v
                                         ON ea.Venue = v.Uuid
-                 WHERE ${ conditions.length ? conditions.map(str => str.trim()).join(" AND ") : "TRUE" }`;
+                 WHERE ${ conditions.length ? conditions.map(str => str.trim()).join(" AND ") : "TRUE" }
+                 ORDER BY ea.Uuid
+  `;
   const client = await connect();
   try {
     const result = await client.query(query, params);
