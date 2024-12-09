@@ -87,7 +87,8 @@ export default async function listEventParticipationApplications(
       EXISTS (
         SELECT 1
         FROM "Society".Membership m0
-        m0.Individual = epa.Applicant AND m0.Society = ANY($${ params.length + 1 })
+        WHERE m0.Individual = epa.Applicant AND m0.Society = ANY($${ params.length + 1 })
+      )
     `);
     params.push(filterApplicantSocieties);
   }
@@ -317,7 +318,6 @@ export default async function listEventParticipationApplications(
     if (!(e instanceof Error)) {
       throw ERROR_UNKNOWN;
     }
-    console.log(e);
     e = processDBError(e);
     throw e;
   } finally {
