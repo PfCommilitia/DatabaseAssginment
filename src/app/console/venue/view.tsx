@@ -137,7 +137,7 @@ function VenueRow(router: AppRouterInstance, onSuccess: () => void, item: VenueW
           <Typography>查看</Typography>
         </MenuItem>
         {
-          permission ? (<MenuItem
+          permission && isAvailable ? (<MenuItem
                   onClick = { () => {
                     props.handleMenuSelect(uuid, "apply");
                   } }
