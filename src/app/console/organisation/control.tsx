@@ -37,13 +37,13 @@ export default function OrganisationControl(
             <Button
                     variant = "contained"
                     onClick = { () => {
-                      if (organisationId.split(",").filter(str => str.length).some(str => !str.trim())) {
-                        alert("组织Id不能为空");
+                      if (organisationId.split(",").filter(str => str.length).some(str => isNaN(parseInt(str.trim())))) {
+                        alert("组织Id必须为数字");
                         return;
                       }
                       consoleState.filter.set({
                         page: [ "organisation" ],
-                        organisationId: organisationId.split(",").filter(str => str.length).map(str => str.trim())
+                        organisationId: organisationId.split(",").filter(str => str.length).map(str => parseInt(str.trim()))
                       });
                       dispatch(setFetching(true));
                     } }

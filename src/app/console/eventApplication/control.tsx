@@ -47,7 +47,7 @@ export default function EventApplicationControl(
                     variant = "standard"
                     value = { startTime }
                     onChange = { (event) => {
-                      setStartTime(new Date(event.target.value).toString());
+                      setStartTime(event.target.value);
                     } }
             ></TextField>
             <TextField
@@ -58,7 +58,7 @@ export default function EventApplicationControl(
                     variant = "standard"
                     value = { endTime }
                     onChange = { (event) => {
-                      setEndTime(new Date(event.target.value).toString());
+                      setEndTime(event.target.value);
                     } }
             ></TextField>
             <Box
@@ -130,6 +130,14 @@ export default function EventApplicationControl(
                     onClick = { () => {
                       if (societyId.split(",").filter(str => str.length).some((s) => isNaN(parseInt(s.trim())))) {
                         alert("社团Id必须为数字");
+                        return;
+                      }
+                      if ((startTime || endTime) && (!startTime || !endTime)) {
+                        alert("开始时间和结束时间必须同时填写");
+                        return;
+                      }
+                      if ((startTime && endTime) && ((new Date(startTime)).getTime() > (new Date(endTime)).getTime())) {
+                        alert("开始时间不能晚于结束时间");
                         return;
                       }
                       consoleState.filter.set({

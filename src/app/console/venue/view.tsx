@@ -13,7 +13,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/dependencies/redux/store";
 import { useRouter } from "next/navigation";
-import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import { setFetching } from "@/app/dependencies/redux/stateSlices/session";
 import {
   AppRouterInstance
@@ -186,12 +185,8 @@ export default function View(
         })
       });
       if (!response.ok) {
-        const error = await response.json();
-        if (error && error.error) {
-          router.push(`/error?error=${ encodeURIComponent(error.error) }`);
-        } else {
-          router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-        }
+        alert("获取信息失败。错误代码：" + (await response.json()).error);
+        return;
       }
       const data = await response.json();
 
@@ -199,12 +194,8 @@ export default function View(
         method: "POST"
       });
       if (!res1.ok) {
-        const error = await res1.json();
-        if (error && error.error) {
-          router.push(`/error?error=${ encodeURIComponent(error.error) }`);
-        } else {
-          router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-        }
+        alert("获取信息失败。错误代码：" + (await res1.json()).error);
+        return;
       }
       const permission = (await res1.json()).payload;
       for (const venue of data.payload) {

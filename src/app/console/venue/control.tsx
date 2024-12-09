@@ -66,13 +66,17 @@ export default function VenueControl(
                         alert("组织Id必须为数字");
                         return;
                       }
-                      if ((new Date(startTime)).getTime() < (new Date(endTime)).getTime()) {
+                      if ((startTime || endTime) && (!startTime || !endTime)) {
+                        alert("开始时间和结束时间必须同时填写");
+                        return;
+                      }
+                      if (startTime && endTime && (new Date(startTime).getTime() > new Date(endTime).getTime())) {
                         alert("开始时间不能晚于结束时间");
                         return;
                       }
                       consoleState.filter.set({
                         page: [ "venue" ],
-                        organisationId: organisationId.split(",").filter(str => str.length).map(str => str.trim()),
+                        organisationId: organisationId.split(",").filter(str => str.length).map(str => parseInt(str.trim())),
                         timeRange: startTime && endTime ? [ startTime, endTime ] : []
                       });
                       dispatch(setFetching(true));

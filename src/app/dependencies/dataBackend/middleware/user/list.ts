@@ -51,7 +51,7 @@ export default async function listUser(
       WHERE Representative = $${ params.length + 1 }) OR EXISTS (
         SELECT 1
         FROM "Society".Society s0
-        WHERE s0.Uuid = (
+        WHERE s0.Uuid = ANY(
           SELECT m0.Society
           FROM "Society".Membership m0
           WHERE m0.Individual = i.Username
@@ -60,10 +60,10 @@ export default async function listUser(
         WITH RECURSIVE OrganisationHierarchy AS (
           SELECT o2.Uuid, o2.Parent, o2.Representative
             FROM "Society".Organisation o2
-            WHERE o2.Uuid = (
+            WHERE o2.Uuid = ANY(
               SELECT s0.Organisation
               FROM "Society".Society s0
-              WHERE s0.Uuid = (
+              WHERE s0.Uuid = ANY(
                 SELECT m0.Society
                 FROM "Society".Membership m0
                 WHERE m0.Individual = i.Username

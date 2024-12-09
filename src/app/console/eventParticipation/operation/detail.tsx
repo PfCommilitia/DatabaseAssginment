@@ -14,7 +14,6 @@ import {
 import {
   AppRouterInstance
 } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import { setFetching } from "@/app/dependencies/redux/stateSlices/session";
 
 function approveEventParticipation(router: AppRouterInstance, onSuccess: () => void, uuid: number, message: string, result: boolean) {
@@ -30,15 +29,9 @@ function approveEventParticipation(router: AppRouterInstance, onSuccess: () => v
             if (!res.ok) {
               res.json().then(
                       res => {
-                        if (res && res.error) {
-                          router.push(`/error?error=${ encodeURIComponent(res.error) }`);
-                        } else {
-                          router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-                        }
+                        alert("审核失败。错误代码：" + res.error);
                       }
-              ).catch(() => {
-                router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-              });
+              );
               return;
             }
             alert("审核成功");
@@ -69,6 +62,10 @@ export default function ViewEventParticipationDialog({ row, option, handleCloseA
         method: "POST",
         body: JSON.stringify({ eventParticipation: row })
       });
+      if (!response.ok) {
+        alert("获取信息失败。错误代码：" + (await response.json()).error);
+        return;
+      }
       const data = (await response.json()).payload;
       setUuid(data[0]);
       setApplyingEvent(data[1]);
@@ -84,6 +81,10 @@ export default function ViewEventParticipationDialog({ row, option, handleCloseA
         method: "POST",
         body: JSON.stringify({ uuid: row })
       });
+      if (!res1.ok) {
+        alert("获取权限失败。错误代码：" + (await res1.json()).error);
+        return;
+      }
       const permission = await res1.json();
       setPermission(permission.payload);
     }

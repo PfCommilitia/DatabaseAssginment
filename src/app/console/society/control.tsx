@@ -56,7 +56,7 @@ export default function SocietyControl(
                       }
                       consoleState.filter.set({
                         page: [ "society" ],
-                        organisationId: organisationId.split(",").filter(str => str.length).map(str => str.trim()),
+                        organisationId: organisationId.split(",").filter(str => str.length).map(str => parseInt(str.trim())),
                         member: member.split(",").filter(str => str.length).map(str => str.trim())
                       });
                       dispatch(setFetching(true));

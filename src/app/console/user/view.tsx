@@ -1,7 +1,6 @@
 import { ConsoleState } from "@/app/console/types";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import {
   Box,
   Table,
@@ -108,12 +107,8 @@ export default function View(
         })
       });
       if (!response.ok) {
-        const error = await response.json();
-        if (error && error.error) {
-          router.push(`/error?error=${ encodeURIComponent(error.error) }`);
-        } else {
-          router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-        }
+        alert("获取信息失败。错误代码：" + (await response.json()).error);
+        return;
       }
       const data = await response.json();
 

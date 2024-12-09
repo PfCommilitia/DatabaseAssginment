@@ -9,9 +9,7 @@ import {
   DialogTitle,
   TextField, Typography
 } from "@mui/material";
-import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import { setFetching } from "@/app/dependencies/redux/stateSlices/session";
-import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 
 export default function ApplyForEventDialog({ row, option, handleCloseAction }: {
@@ -20,13 +18,12 @@ export default function ApplyForEventDialog({ row, option, handleCloseAction }: 
   handleCloseAction: () => void
 }) {
   const [ uuid, setUuid ] = useState<number>(0);
-  const [ society, setSociety ] = useState<number>(0);
+  const [ society, setSociety ] = useState<string>("");
   const [ startTime, setStartTime ] = useState<string>("");
   const [ endTime, setEndTime ] = useState<string>("");
   const [ title, setTitle ] = useState<string>("");
   const [ description, setDescription ] = useState<string>("");
   const [ capacity, setCapacity ] = useState<string>("-1");
-  const router = useRouter();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -69,12 +66,7 @@ export default function ApplyForEventDialog({ row, option, handleCloseAction }: 
                       variant = "standard"
                       value = { society }
                       onChange = { (e) => {
-                        if (isNaN(parseInt(e.target.value))) {
-                          e.target.value = "";
-                        }
-                        if (e.target.value.length) {
-                          setSociety(parseInt(e.target.value));
-                        }
+                        setSociety(e.target.value);
                       } }
               ></TextField>
               <TextField
@@ -167,10 +159,14 @@ export default function ApplyForEventDialog({ row, option, handleCloseAction }: 
                           alert("开始时间必须早于当前时间的7天后");
                           return;
                         }
+                        if (isNaN(parseInt(society))) {
+                                alert("社团Id必须是一个整数");
+                                return;
+                                }
                         fetch("/api/console/eventApplication/place", {
                           method: "POST",
                           body: JSON.stringify({
-                            uuid: society,
+                            uuid: parseInt(society),
                             venue: uuid,
                             timeRange: [ startTime, endTime ],
                             title,
@@ -182,15 +178,9 @@ export default function ApplyForEventDialog({ row, option, handleCloseAction }: 
                                   if (!response.ok) {
                                     response.json().then(
                                             res => {
-                                              if (res && res.error) {
-                                                router.push(`/error?error=${ encodeURIComponent(res.error) }`);
-                                              } else {
-                                                router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-                                              }
+                                              alert("活动申请失败。错误代码：" + res.error);
                                             }
-                                    ).catch(() => {
-                                      router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-                                    });
+                                    );
                                   } else {
                                     alert("活动申请成功");
                                     dispatch(setFetching(true));

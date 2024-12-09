@@ -14,7 +14,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/app/dependencies/redux/store";
 import { useRouter } from "next/navigation";
-import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import { setFetching } from "@/app/dependencies/redux/stateSlices/session";
 import ViewEventApplicationDialog from "@/app/console/eventApplication/operation/detail";
 import {
@@ -196,15 +195,9 @@ function EventApplicationRow(router: AppRouterInstance, onSuccess: () => void, i
                                       if (!res.ok) {
                                         res.json().then(
                                                 error => {
-                                                  if (error && error.error) {
-                                                    router.push(`/error?error=${ encodeURIComponent(error.error) }`);
-                                                  } else {
-                                                    router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-                                                  }
+                                                  alert("申请失败。错误代码：" + error.error);
                                                 }
-                                        ).catch(() => {
-                                          router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-                                        });
+                                        );
                                         return;
                                       }
                                       alert("申请成功");
@@ -230,15 +223,9 @@ function EventApplicationRow(router: AppRouterInstance, onSuccess: () => void, i
                               if (!res.ok) {
                                 res.json().then(
                                         error => {
-                                          if (error && error.error) {
-                                            router.push(`/error?error=${ encodeURIComponent(error.error) }`);
-                                          } else {
-                                            router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-                                          }
+                                          alert("撤销失败。错误代码：" + error.error);
                                         }
-                                ).catch(() => {
-                                  router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-                                });
+                                );
                                 return;
                               }
                               alert("撤销成功");
@@ -276,7 +263,7 @@ export default function View(
       let filterStatus = null;
       let filterActive = null;
       if (filter.page?.[0] === "eventApplication") {
-        filterSocieties = filter.societyId?.length ? filter.societyId0 : null;
+        filterSocieties = filter.societyId?.length ? filter.societyId : null;
         filterTimeRange = filter.timeRange?.length ? filter.timeRange : null;
         filterStatus = filter.status?.length ? filter.status : null;
         filterActive = filter.active?.length ? true : null;
@@ -298,12 +285,8 @@ export default function View(
         })
       });
       if (!response.ok) {
-        const error = await response.json();
-        if (error && error.error) {
-          router.push(`/error?error=${ encodeURIComponent(error.error) }`);
-        } else {
-          router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-        }
+        alert("获取信息失败。错误代码：" + (await response.json()).error);
+        return;
       }
       const data = await response.json();
 
@@ -312,6 +295,10 @@ export default function View(
           method: "POST",
           body: JSON.stringify({ uuid: society[0] })
         });
+        if (!res1.ok) {
+          alert("获取信息失败。错误代码：" + (await res1.json()).error);
+          return;
+        }
         const permission = (await res1.json()).payload;
         society.push(permission);
       }

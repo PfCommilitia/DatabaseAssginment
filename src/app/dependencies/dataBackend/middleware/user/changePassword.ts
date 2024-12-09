@@ -6,6 +6,9 @@ import {
   ERROR_NO_USER_IN_SESSION,
   ERROR_SESSION_NOT_FOUND
 } from "@/app/dependencies/error/session";
+import {
+  ERROR_TOO_SIMPLE_PASSWORD
+} from "@/app/dependencies/error/databaseTrigger";
 
 export default async function changePassword(password: string, newPassword: string):
   Promise<number | null> {
@@ -15,6 +18,16 @@ export default async function changePassword(password: string, newPassword: stri
   }
   if (!session.user) {
     throw ERROR_NO_USER_IN_SESSION;
+  }
+  const rule = [
+    /^[a-zA-Z0-9!@#$%^&*()_+]{8,}$/,
+    /[a-z]/,
+    /[A-Z]/,
+    /[0-9]/,
+    /[!@#$%^&*()_+]/
+  ];
+  if (!rule.every(r => r.test(newPassword))) {
+    throw ERROR_TOO_SIMPLE_PASSWORD;
   }
   const client = await connect();
   try {

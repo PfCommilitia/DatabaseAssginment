@@ -16,11 +16,11 @@ import TopBar from "@/app/dependencies/sharedComponents/topBar";
 import FootBar from "@/app/dependencies/sharedComponents/footBar";
 import { useInitSession } from "@/app/dependencies/lib/initSession";
 import { useEffect, useState } from "react";
-import { ERROR_UNKNOWN } from "@/app/dependencies/error/unknown";
 import {
   ERROR_NO_USER_IN_SESSION,
   ERROR_SESSION_NOT_FOUND
 } from "@/app/dependencies/error/session";
+import { ERROR_TOO_SIMPLE_PASSWORD } from "@/app/dependencies/error/databaseTrigger";
 
 interface UserInfo {
   username: string;
@@ -35,46 +35,42 @@ function ChangePasswordDialog({ open, handleCloseAction }: {
   const [ password, setPassword ] = useState("");
   const [ passwordNew, setPasswordNew ] = useState("");
   const [ passwordConfirm, setPasswordConfirm ] = useState("");
-  const [ passwordMismatch, setPasswordMismatch ] = useState(false);
   const session = useSelector((state: RootState) => state.session.session);
-  const router = useRouter();
 
   async function handleChangePassword() {
     if (!session) {
-      router.push(`/error?error=${ encodeURIComponent(ERROR_SESSION_NOT_FOUND.code) }`);
+      alert("修改密码失败。错误代码：" + ERROR_SESSION_NOT_FOUND.code);
       return;
     }
     if (!session.user?.name) {
-      router.push(`/error?error=${ encodeURIComponent(ERROR_NO_USER_IN_SESSION.code) }`);
+      alert("修改密码失败。错误代码：" + ERROR_NO_USER_IN_SESSION.code);
       return;
     }
     if (passwordNew !== passwordConfirm) {
-      setPasswordMismatch(true);
+      alert("修改密码失败。新密码与确认密码不一致。");
       return;
+    }
+    if (password === passwordNew) {
+      alert("修改密码失败。新密码与输入的旧密码相同。");
     }
     if (passwordNew === "") {
       return;
     }
-    try {
-      const validateLogin = await fetch("/api/user/changePassword", {
-        method: "POST",
-        body: JSON.stringify({
-          username: session.user.name,
-          password: password,
-          passwordNew: passwordNew
-        })
-      });
-      if (!validateLogin.ok) {
-        const error = await validateLogin.json();
-        if (error && error.error) {
-          router.push(`/error?error=${ encodeURIComponent(error.error) }`);
-        } else {
-          router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-        }
+    const validateLogin = await fetch("/api/user/changePassword", {
+      method: "POST",
+      body: JSON.stringify({
+        username: session.user.name,
+        password: password,
+        passwordNew: passwordNew
+      })
+    });
+    if (!validateLogin.ok) {
+      const code = (await validateLogin.json()).error;
+      if (code === ERROR_TOO_SIMPLE_PASSWORD.code) {
+        alert("修改密码失败。新密码必须包含数字、小写字母、大写字母和特殊符号，且长度不小于8。请检查密码复杂度，以及是否使用了未允许的字符。");
+        return;
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (e) {
-      router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
+      alert("修改密码失败。错误代码：" + (await validateLogin.json()).error);
     }
     handleCloseAction();
   }
@@ -110,7 +106,6 @@ function ChangePasswordDialog({ open, handleCloseAction }: {
                       fullWidth
                       variant = "standard"
                       value = { passwordConfirm }
-                      sx = { { color: passwordMismatch ? "error.main" : undefined } }
                       onChange = { (e) => setPasswordConfirm(e.target.value) }
               />
             </DialogContent>
@@ -151,12 +146,8 @@ function UserInfoBox(): JSX.Element {
         method: "POST"
       });
       if (!res.ok) {
-        const error = await res.json();
-        if (error && error.error) {
-          router.push(`/error?error=${ encodeURIComponent(error.error) }`);
-        } else {
-          router.push(`/error?error=${ encodeURIComponent(ERROR_UNKNOWN.code) }`);
-        }
+        alert("获取用户信息失败。错误代码：" + (await res.json()).error);
+        return;
       }
       const info = await res.json();
       setUserInfo(info.payload);

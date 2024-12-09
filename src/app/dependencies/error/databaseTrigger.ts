@@ -59,3 +59,5 @@ export const ERROR_CONFLICTING_APPLICATION = new ServerError(
 );
 
 export const ERROR_EVENT_FULL = new ServerError("Event full", 21);
+
+export const ERROR_TOO_SIMPLE_PASSWORD = new ServerError("Too simple password", 24);
