@@ -228,17 +228,25 @@ export default function View(
       }
       const data = await response.json();
 
+      const fetches = [];
       for (const society of data.payload) {
-        const res1 = await fetch("/api/console/eventParticipation/getPermission", {
+        const res1 = fetch("/api/console/eventParticipation/getPermission", {
           method: "POST",
           body: JSON.stringify({ uuid: society[0] })
         });
-        if (!res1.ok) {
-          alert("获取权限失败。错误代码：" + (await res1.json()).error);
+        fetches.push(res1);
+      }
+
+      const results = await Promise.all(fetches);
+
+      for (let i = 0; i < data.payload.length; i++) {
+        const res = results[i];
+        if (!res.ok) {
+          alert("获取信息失败。错误代码：" + (await res.json()).error);
           return;
         }
-        const permission = (await res1.json()).payload;
-        society.push(permission);
+        const permission = await res.json();
+        data.payload[i].push(permission.payload);
       }
 
       setData(data.payload);
