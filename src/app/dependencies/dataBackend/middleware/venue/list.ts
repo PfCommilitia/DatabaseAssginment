@@ -122,7 +122,7 @@ export default async function listVenues(
       row.name,
       row.address,
       row.description,
-      row.isAvailable,
+      row.isavailable,
       row.organisationname,
       row.capacity,
       row.imageurl
